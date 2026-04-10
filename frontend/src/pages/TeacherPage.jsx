@@ -1,82 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const TEACHER_TASKS = [
-  {
-    id: 1,
-    text: "Grade Chemistry Lab Reports",
-    completed: false,
-    priority: "High",
-  },
-  {
-    id: 2,
-    text: "Prepare Physics Lecture Slides",
-    completed: true,
-    priority: "Medium",
-  },
-  {
-    id: 3,
-    text: "Update Attendance Records",
-    completed: false,
-    priority: "Low",
-  },
-  {
-    id: 4,
-    text: "Review Mid-term Exam Papers",
-    completed: false,
-    priority: "High",
-  },
-];
-
-const STUDENT_DATA = [
-  {
-    id: 1,
-    name: "Aarav Sharma",
-    attendance: "94%",
-    assignments: 1,
-    performance: { Chemistry: 88, Physics: 76, Mathematics: 92, Biology: 81 },
-  },
-  {
-    id: 2,
-    name: "Meera Patel",
-    attendance: "88%",
-    assignments: 3,
-    performance: { Chemistry: 65, Physics: 58, Mathematics: 72, Biology: 68 },
-  },
-  {
-    id: 3,
-    name: "Ishaan Gupta",
-    attendance: "96%",
-    assignments: 0,
-    performance: { Chemistry: 91, Physics: 89, Mathematics: 95, Biology: 93 },
-  },
-  {
-    id: 4,
-    name: "Ananya Iyer",
-    attendance: "72%",
-    assignments: 5,
-    performance: { Chemistry: 32, Physics: 45, Mathematics: 38, Biology: 29 },
-  },
-  {
-    id: 5,
-    name: "Rohan Verma",
-    attendance: "82%",
-    assignments: 2,
-    performance: { Chemistry: 55, Physics: 62, Mathematics: 48, Biology: 51 },
-  },
-  {
-    id: 6,
-    name: "Sanya Malhotra",
-    attendance: "91%",
-    assignments: 1,
-    performance: { Chemistry: 78, Physics: 82, Mathematics: 75, Biology: 88 },
-  },
-];
-
 export default function TeacherPage() {
-  const [tasks, setTasks] = useState(TEACHER_TASKS);
-  const [selectedSubject, setSelectedSubject] = useState("Chemistry");
-  const [newTask, setNewTask] = useState("");
   const [subjects, setSubjects] = useState([]);
 
   const [addingSubject, setAddingSubject] = useState(false);
@@ -85,48 +10,6 @@ export default function TeacherPage() {
 
   const [currentSubjectIndex, setCurrentSubjectIndex] = useState(null);
   const subjectOptions = ["Chemistry", "Physics", "Mathematics", "Biology"];
-
-  const addTask = (e) => {
-    e.preventDefault();
-    if (!newTask.trim()) return;
-    const task = {
-      id: Date.now(),
-      text: newTask,
-      completed: false,
-      priority: "Medium",
-    };
-    setTasks([task, ...tasks]);
-    setNewTask("");
-  };
-
-  const toggleTask = (id) => {
-    setTasks(
-      tasks.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)),
-    );
-  };
-
-  const getStatus = (percent) => {
-    if (percent > 70)
-      return {
-        label: "Good",
-        border: "border-emerald-500/50",
-        text: "text-emerald-400",
-        bg: "bg-emerald-500/10",
-      };
-    if (percent < 35)
-      return {
-        label: "Bad",
-        border: "border-rose-500/50",
-        text: "text-rose-400",
-        bg: "bg-rose-500/10",
-      };
-    return {
-      label: "Average",
-      border: "border-amber-500/50",
-      text: "text-amber-400",
-      bg: "bg-amber-500/10",
-    };
-  };
 
   return (
     <div className="p-6 lg:p-10 max-w-7xl mx-auto space-y-10">
@@ -147,121 +30,10 @@ export default function TeacherPage() {
             Manage your daily tasks and subjects.
           </p>
         </motion.div>
-        <div className="flex gap-3">
-          <div className="relative group">
-            <select
-              value={selectedSubject}
-              onChange={(e) => setSelectedSubject(e.target.value)}
-              className="px-6 py-3 rounded-full bg-surface-container-highest border border-outline-variant/15 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-secondary/50 transition-all cursor-pointer"
-            >
-              {subjectOptions.map((sub) => (
-                <option
-                  key={sub}
-                  value={sub}
-                  className="bg-surface-container-highest"
-                >
-                  {sub}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+        <div className="flex gap-3"></div>
       </div>
 
-      <div className="space-y-8">
-        {/* Pending Tasks Section */}
-        <div className="space-y-6">
-          <section className="glass-panel p-8 rounded-[2.5rem] border border-outline-variant/15 flex flex-col gap-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xl font-bold font-headline text-on-surface flex items-center gap-3">
-                <span
-                  className="material-symbols-outlined text-secondary"
-                  data-icon="checklist"
-                >
-                  checklist
-                </span>
-                Pending Tasks
-              </h3>
-              <span className="text-xs font-bold px-3 py-1 rounded-full bg-surface-container-highest border border-outline-variant/20 text-slate-400">
-                {tasks.filter((t) => !t.completed).length} Pending
-              </span>
-            </div>
-
-            <form onSubmit={addTask} className="relative group">
-              <input
-                type="text"
-                placeholder="Add a new task..."
-                value={newTask}
-                onChange={(e) => setNewTask(e.target.value)}
-                className="w-full px-5 py-4 bg-surface-container-high/40 border border-outline-variant/30 rounded-2xl focus:ring-4 focus:ring-secondary/10 focus:border-secondary outline-none transition-all duration-300 text-white font-medium placeholder:text-on-surface-variant/40 backdrop-blur-sm"
-              />
-              <button
-                type="submit"
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-xl bg-secondary text-on-secondary flex items-center justify-center shadow-lg shadow-secondary/20 hover:scale-105 transition-transform active:scale-95"
-              >
-                <span className="material-symbols-outlined" data-icon="add">
-                  add
-                </span>
-              </button>
-            </form>
-
-            <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-              <AnimatePresence mode="popLayout">
-                {tasks.map((task) => (
-                  <motion.div
-                    key={task.id}
-                    layout
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    className={`group flex items-center gap-4 p-4 rounded-2xl border transition-all cursor-pointer ${
-                      task.completed
-                        ? "bg-surface-container/20 border-outline-variant/10 opacity-60"
-                        : "bg-surface-container-highest/40 border-outline-variant/20 hover:border-secondary/30"
-                    }`}
-                    onClick={() => toggleTask(task.id)}
-                  >
-                    <div
-                      className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${
-                        task.completed
-                          ? "bg-secondary border-secondary"
-                          : "border-outline-variant/40"
-                      }`}
-                    >
-                      {task.completed && (
-                        <span
-                          className="material-symbols-outlined text-sm text-on-secondary font-bold"
-                          data-icon="check"
-                        >
-                          check
-                        </span>
-                      )}
-                    </div>
-                    <span
-                      className={`flex-grow text-sm font-medium ${task.completed ? "line-through text-slate-500" : "text-on-surface"}`}
-                    >
-                      {task.text}
-                    </span>
-                    {!task.completed && (
-                      <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter ${
-                          task.priority === "High"
-                            ? "bg-rose-500/10 text-rose-400"
-                            : task.priority === "Medium"
-                              ? "bg-amber-500/10 text-amber-400"
-                              : "bg-teal-500/10 text-teal-400"
-                        }`}
-                      >
-                        {task.priority}
-                      </span>
-                    )}
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-          </section>
-        </div>
-      </div>
+      <div className="space-y-8"></div>
 
       <div className="mt-10">
         <section className="glass-panel p-8 rounded-[2.5rem] border border-outline-variant/15">
@@ -408,6 +180,24 @@ export default function TeacherPage() {
                       >
                         {task.text}
                       </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const updatedSubjects = [...subjects];
+                          updatedSubjects[index].tasks = updatedSubjects[
+                            index
+                          ].tasks.filter((t) => t.id !== task.id);
+                          setSubjects(updatedSubjects);
+                        }}
+                        className="w-6 h-6 rounded-full bg-rose-500/10 hover:bg-rose-500/20 flex items-center justify-center transition-colors"
+                      >
+                        <span
+                          className="material-symbols-outlined text-xs text-rose-400"
+                          data-icon="cancel"
+                        >
+                          cancel
+                        </span>
+                      </button>
                     </div>
                   ))}
                 </div>
