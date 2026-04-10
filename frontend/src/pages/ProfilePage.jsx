@@ -1,191 +1,21 @@
 import { useState, useEffect } from 'react';
-<<<<<<< HEAD
-import { motion } from 'framer-motion';
-
-export default function ProfilePage() {
-  const [session, setSession] = useState(null);
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    username: '',
-    password: ''
-  });
-  const [isSaved, setIsSaved] = useState(false);
-
-  useEffect(() => {
-    const raw = localStorage.getItem('alws_session') || sessionStorage.getItem('alws_session');
-    if (raw) {
-      const data = JSON.parse(raw);
-      setSession(data);
-      setFormData({
-        firstName: data.firstName || '',
-        lastName: data.lastName || '',
-        email: data.email || '',
-        username: data.username || data.email?.split('@')[0] || 'student123',
-        password: data.password || 'password123'
-      });
-    }
-  }, []);
-
-  const handleSave = (e) => {
-    e.preventDefault();
-    const updatedSession = { ...session, ...formData };
-    
-    // Save to the appropriate storage
-    if (localStorage.getItem('alws_session')) {
-      localStorage.setItem('alws_session', JSON.stringify(updatedSession));
-    } else {
-      sessionStorage.setItem('alws_session', JSON.stringify(updatedSession));
-    }
-    
-    setIsSaved(true);
-    setTimeout(() => setIsSaved(false), 3000);
-  };
-
-  return (
-    <div className="pt-28 p-10 max-w-7xl mx-auto space-y-10 min-h-screen pb-20">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-        <div className="space-y-2">
-          <h2 className="text-5xl font-extrabold tracking-tighter text-on-surface font-headline leading-tight">
-            Account <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1DB954] to-teal-400">Profile.</span>
-          </h2>
-          <p className="text-on-surface-variant max-w-md font-label">View and update your personal details, credentials, and account accessibility.</p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-12 gap-8">
-        <div className="col-span-12 lg:col-span-4">
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="glass-panel p-8 rounded-[3rem] border border-white/5 flex flex-col items-center text-center gap-6 sticky top-32"
-          >
-            <div className="relative group">
-              <img 
-                src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=200&h=200&auto=format&fit=crop" 
-                alt="Profile Large" 
-                className="w-40 h-40 rounded-3xl border-2 border-[#1DB954]/30 object-cover shadow-2xl transition-all group-hover:border-[#1DB954]"
-              />
-              <button className="absolute -bottom-4 right-2 w-12 h-12 rounded-2xl bg-[#1DB954] text-on-primary flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
-                <span className="material-symbols-outlined" data-icon="photo_camera">photo_camera</span>
-              </button>
-            </div>
-            
-            <div className="space-y-1">
-              <h3 className="text-2xl font-black text-on-surface font-headline">{formData.firstName} {formData.lastName}</h3>
-              <p className="text-sm text-[#1DB954] font-bold uppercase tracking-widest">{session?.courseBranch || 'ALWS Student'}</p>
-              <div className="mt-4 flex flex-wrap justify-center gap-2">
-                <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">BTech CE</span>
-                <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Semester 6</span>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        <div className="col-span-12 lg:col-span-8">
-          <motion.section 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="glass-panel p-10 rounded-[3rem] border border-white/5"
-          >
-            <form onSubmit={handleSave} className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] ml-2">First Name</label>
-                  <input 
-                    type="text" 
-                    value={formData.firstName}
-                    onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white font-medium focus:border-[#1DB954] focus:ring-4 focus:ring-[#1DB954]/10 transition-all outline-none"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] ml-2">Last Name</label>
-                  <input 
-                    type="text" 
-                    value={formData.lastName}
-                    onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white font-medium focus:border-[#1DB954] focus:ring-4 focus:ring-[#1DB954]/10 transition-all outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] ml-2">Email Address</label>
-                <input 
-                  type="email" 
-                  value={formData.email}
-                  disabled
-                  className="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 text-slate-500 font-medium cursor-not-allowed italic"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-secondary uppercase tracking-[0.2em] ml-2">Username</label>
-                  <div className="relative group">
-                    <input 
-                      type="text" 
-                      value={formData.username}
-                      onChange={(e) => setFormData({...formData, username: e.target.value})}
-                      className="w-full bg-[#FF5722]/5 border border-[#FF5722]/20 rounded-2xl px-6 py-4 text-white font-bold tracking-tight focus:border-[#FF5722] focus:ring-4 focus:ring-[#FF5722]/10 transition-all outline-none"
-                    />
-                    <span className="material-symbols-outlined absolute right-6 top-1/2 -translate-y-1/2 text-[#FF5722]/40" data-icon="alternate_email">alternate_email</span>
-                  </div>
-                  <p className="text-[10px] text-slate-500 ml-4">This is your unique identifier for login.</p>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-secondary uppercase tracking-[0.2em] ml-2">Password</label>
-                  <div className="relative group">
-                    <input 
-                      type="text" 
-                      value={formData.password}
-                      onChange={(e) => setFormData({...formData, password: e.target.value})}
-                      className="w-full bg-[#FF5722]/5 border border-[#FF5722]/20 rounded-2xl px-6 py-4 text-white font-bold tracking-wider focus:border-[#FF5722] focus:ring-4 focus:ring-[#FF5722]/10 transition-all outline-none"
-                    />
-                    <span className="material-symbols-outlined absolute right-6 top-1/2 -translate-y-1/2 text-[#FF5722]/40" data-icon="lock_open">lock_open</span>
-                  </div>
-                  <p className="text-[10px] text-slate-500 ml-4">Keep your password secure and unique.</p>
-                </div>
-              </div>
-
-              <div className="pt-6 flex items-center justify-between">
-                <button 
-                  type="submit" 
-                  className="px-10 py-5 bg-[#1DB954] text-on-primary font-black rounded-[2rem] shadow-xl shadow-[#1DB954]/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-3"
-                >
-                  <span className="material-symbols-outlined font-black" data-icon="save">save</span>
-                  Save Changes
-                </button>
-
-                {isSaved && (
-                  <motion.div 
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="flex items-center gap-2 text-[#1DB954] font-bold"
-                  >
-                    <span className="material-symbols-outlined font-black" data-icon="task_alt">task_alt</span>
-                    Changes saved successfully!
-                  </motion.div>
-                )}
-              </div>
-            </form>
-          </motion.section>
-        </div>
-=======
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
+  const [session, setSession] = useState(null);
+  const [isSaved, setIsSaved] = useState(false);
+  
   const [profile, setProfile] = useState({
     firstName: 'Student',
-    lastName: '',
+    lastName: 'User',
+    email: 'student@slrtce.edu',
+    username: 'student123',
+    password: 'password123',
     rollNo: '24C091',
     className: 'FY',
     branch: 'Computer Engineering',
     phone: '',
-    email: 'student@slrtce.edu',
     parentName: 'Mr & Mrs Sharma',
     parentPhone: ''
   });
@@ -195,39 +25,47 @@ export default function ProfilePage() {
     try {
       const raw = localStorage.getItem('alws_session') || sessionStorage.getItem('alws_session');
       if (raw) {
-        const session = JSON.parse(raw);
+        const data = JSON.parse(raw);
+        setSession(data);
         setProfile(prev => ({
           ...prev,
-          firstName: session.firstName || prev.firstName,
-          lastName: session.lastName || prev.lastName,
-          email: session.email || prev.email,
-          branch: session.courseBranch || prev.branch,
+          firstName: data.firstName || prev.firstName,
+          lastName: data.lastName || prev.lastName,
+          email: data.email || prev.email,
+          username: data.username || data.email?.split('@')[0] || prev.username,
+          password: data.password || prev.password,
+          branch: data.courseBranch || prev.branch,
         }));
       }
-    } catch {
-      // ignore
+    } catch (e) {
+      console.error("Failed to load session", e);
     }
   }, []);
 
   const handleSave = () => {
-    // Optionally save back to session (for header updates, etc.)
     try {
-      const storageLayer = localStorage.getItem('alws_session') ? localStorage : sessionStorage;
-      const raw = storageLayer.getItem('alws_session');
-      if (raw) {
-        const session = JSON.parse(raw);
-        session.firstName = profile.firstName;
-        session.lastName = profile.lastName;
-        session.email = profile.email;
-        session.courseBranch = profile.branch;
-        storageLayer.setItem('alws_session', JSON.stringify(session));
-      }
+      const updatedSession = { 
+        ...session, 
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        email: profile.email,
+        username: profile.username,
+        password: profile.password,
+        courseBranch: profile.branch
+      };
       
-      // Auto-refresh slightly to let Header pick up changes nicely, or let user just realize context.
-      window.dispatchEvent(new Event('storage')); // trigger updates if listening
-    } catch {}
-
-    setIsEditing(false);
+      const storageLayer = localStorage.getItem('alws_session') ? localStorage : sessionStorage;
+      storageLayer.setItem('alws_session', JSON.stringify(updatedSession));
+      
+      // Auto-refresh slightly to let Header pick up changes
+      window.dispatchEvent(new Event('storage'));
+      
+      setIsSaved(true);
+      setTimeout(() => setIsSaved(false), 3000);
+      setIsEditing(false);
+    } catch (e) {
+      console.error("Failed to save session", e);
+    }
   };
 
   const handleChange = (e) => {
@@ -236,146 +74,191 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="p-8 text-[#EAEAEA] min-h-screen font-manrope">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#1DB954]/10 flex items-center justify-center border border-[#1DB954]/20">
-              <span className="material-symbols-outlined text-[#1DB954] text-2xl" data-icon="person_outline">person_outline</span>
+    <div className="p-8 text-[#EAEAEA] min-h-screen font-manrope pt-24 pb-20">
+      <div className="max-w-5xl mx-auto">
+        {/* Page Header */}
+        <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
+          <div className="flex items-center gap-6">
+            <div className="w-16 h-16 rounded-[1.5rem] bg-[#1DB954]/10 flex items-center justify-center border border-[#1DB954]/20 shadow-xl">
+              <span className="material-symbols-outlined text-[#1DB954] text-3xl" data-icon="account_circle">account_circle</span>
             </div>
             <div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-white mb-1">Student Profile</h1>
-              <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Personal & Academic Info</p>
+              <h1 className="text-4xl font-black tracking-tight text-white mb-1">Account Profile</h1>
+              <p className="text-sm font-bold text-slate-400 uppercase tracking-widest leading-none">Manage your personal and security details</p>
             </div>
           </div>
           
-          {/* Action Buttons */}
           <AnimatePresence mode="popLayout">
             {isEditing ? (
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="flex gap-3"
+                className="flex gap-3 w-full md:w-auto"
               >
                 <button 
                   onClick={() => setIsEditing(false)}
-                  className="px-5 py-2.5 rounded-xl text-white font-bold bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                  className="flex-grow md:flex-none px-8 py-3 rounded-2xl text-white font-bold bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
                 >
                   Cancel
                 </button>
                 <button 
                   onClick={handleSave}
-                  className="px-5 py-2.5 rounded-xl text-[#121212] font-bold bg-[#1DB954] hover:bg-teal-400 shadow-lg shadow-[#1DB954]/20 transition-colors flex items-center gap-2"
+                  className="flex-grow md:flex-none px-8 py-3 rounded-2xl text-[#121212] font-black bg-[#1DB954] hover:bg-teal-400 shadow-xl shadow-[#1DB954]/20 transition-all flex items-center justify-center gap-2"
                 >
-                  <span className="material-symbols-outlined text-sm" data-icon="save">save</span>
+                  <span className="material-symbols-outlined font-black text-sm" data-icon="save">save</span>
                   Save Changes
                 </button>
               </motion.div>
             ) : (
-              <motion.button 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                onClick={() => setIsEditing(true)}
-                className="px-5 py-2.5 rounded-xl text-[#121212] font-bold bg-[#1DB954] hover:bg-teal-400 shadow-lg shadow-[#1DB954]/20 transition-colors flex items-center gap-2"
-              >
-                <span className="material-symbols-outlined text-sm" data-icon="edit">edit</span>
-                Edit Profile
-              </motion.button>
+              <motion.div className="flex items-center gap-4 w-full md:w-auto">
+                {isSaved && (
+                  <motion.span 
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="text-[#1DB954] text-sm font-bold flex items-center gap-2"
+                  >
+                    <span className="material-symbols-outlined text-sm font-black" data-icon="check_circle">check_circle</span>
+                    Saved successfully
+                  </motion.span>
+                )}
+                <button 
+                  onClick={() => setIsEditing(true)}
+                  className="flex-grow md:flex-none px-8 py-3 rounded-2xl text-[#121212] font-black bg-[#1DB954] hover:bg-teal-400 shadow-xl shadow-[#1DB954]/20 transition-all flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined font-black text-sm" data-icon="edit">edit</span>
+                  Edit Profile
+                </button>
+              </motion.div>
             )}
           </AnimatePresence>
         </div>
 
-        <motion.div 
-          layout
-          className="bg-[#1a1a1a] rounded-[2rem] border border-white/5 shadow-2xl p-8 relative overflow-hidden"
-        >
-          {/* Decorative Background */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-[#1DB954]/10 to-teal-500/5 rounded-full blur-[80px] pointer-events-none" />
-
-          {/* Top Info Banner */}
-          <div className="flex items-center gap-6 mb-10 pb-8 border-b border-white/5 relative z-10">
-            <div className="relative group cursor-pointer">
-              <div className="w-24 h-24 rounded-[1.5rem] bg-gradient-to-br from-[#2a2a2a] to-[#121212] border-2 border-white/10 shadow-lg flex items-center justify-center overflow-hidden">
-                <img src={`https://api.dicebear.com/7.x/identicon/svg?seed=${profile.email}`} alt="avatar" className="w-full h-full object-cover opacity-80" />
-              </div>
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-[1.5rem] flex items-center justify-center">
-                <span className="material-symbols-outlined text-white" data-icon="photo_camera">photo_camera</span>
-              </div>
-            </div>
-            <div>
-              <h2 className="text-2xl font-black text-white">{profile.firstName} {profile.lastName}</h2>
-              <p className="text-secondary font-medium text-[#1DB954]">{profile.branch}</p>
-            </div>
-          </div>
-
-          {/* Form / View Layout */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 relative z-10">
-            
-            {/* Academic Details Section */}
-            <div className="space-y-6">
-              <h3 className="text-sm font-black uppercase tracking-widest text-[#1DB954] flex items-center gap-2">
-                <span className="material-symbols-outlined" data-icon="school">school</span>
-                Academic Details
-              </h3>
-              
-              <div className="space-y-4">
-                <Field label="First Name" name="firstName" value={profile.firstName} isEditing={isEditing} onChange={handleChange} />
-                <Field label="Last Name" name="lastName" value={profile.lastName} isEditing={isEditing} onChange={handleChange} />
-                <div className="grid grid-cols-2 gap-4">
-                  <Field label="Roll No" name="rollNo" value={profile.rollNo} isEditing={isEditing} onChange={handleChange} />
-                  <Field label="Class" name="className" value={profile.className} isEditing={isEditing} onChange={handleChange} />
+        <div className="grid grid-cols-12 gap-8">
+          {/* Sidebar / Photo */}
+          <div className="col-span-12 lg:col-span-4 space-y-8">
+            <motion.div 
+              layout
+              className="glass-panel p-10 rounded-[3rem] border border-white/5 bg-[#1a1a1a]/40 flex flex-col items-center text-center gap-8 relative overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#1DB954]/5 rounded-full blur-3xl" />
+              <div className="relative group">
+                <div className="w-32 h-32 rounded-[2rem] bg-gradient-to-br from-[#2a2a2a] to-[#121212] border-2 border-white/10 shadow-2xl flex items-center justify-center overflow-hidden transition-transform duration-500 group-hover:scale-105">
+                  <img src={`https://api.dicebear.com/7.x/identicon/svg?seed=${profile.email}`} alt="avatar" className="w-full h-full object-cover opacity-90" />
                 </div>
-                <Field label="Branch" name="branch" value={profile.branch} isEditing={isEditing} onChange={handleChange} />
+                {isEditing && (
+                  <div className="absolute inset-0 bg-black/60 rounded-[2rem] flex items-center justify-center cursor-pointer hover:bg-black/40 transition-all">
+                    <span className="material-symbols-outlined text-white text-3xl" data-icon="add_a_photo">add_a_photo</span>
+                  </div>
+                )}
               </div>
-            </div>
-
-            {/* Contact Details Section */}
-            <div className="space-y-6">
-              <h3 className="text-sm font-black uppercase tracking-widest text-teal-400 flex items-center gap-2">
-                <span className="material-symbols-outlined" data-icon="contact_phone">contact_phone</span>
-                Contact & Parents
-              </h3>
-              
-              <div className="space-y-4">
-                <Field label="Email Address" name="email" type="email" value={profile.email} isEditing={isEditing} onChange={handleChange} />
-                <Field label="Phone Number" name="phone" type="tel" value={profile.phone} isEditing={isEditing} onChange={handleChange} placeholder="+91 9000000000" />
-                <Field label="Parent/Guardian Name" name="parentName" value={profile.parentName} isEditing={isEditing} onChange={handleChange} />
-                <Field label="Parent's Phone" name="parentPhone" type="tel" value={profile.parentPhone} isEditing={isEditing} onChange={handleChange} placeholder="+91 9000000000" />
+              <div className="space-y-2 relative z-10">
+                <h3 className="text-2xl font-black text-white">{profile.firstName} {profile.lastName}</h3>
+                <div className="flex flex-col gap-1 items-center">
+                   <span className="text-sm font-bold text-[#1DB954] uppercase tracking-[0.2em]">{profile.branch}</span>
+                   <span className="text-[10px] text-slate-500 font-black px-3 py-1 bg-white/5 rounded-full border border-white/5 uppercase">Roll No: {profile.rollNo}</span>
+                </div>
               </div>
-            </div>
-
+            </motion.div>
           </div>
-        </motion.div>
->>>>>>> 183da81 (Dashboard)
+
+          {/* Form Sections */}
+          <div className="col-span-12 lg:col-span-8 space-y-8">
+            <motion.div layout className="glass-panel p-10 rounded-[3.5rem] border border-white/5 bg-[#1a1a1a]/60 space-y-12">
+              
+              {/* Account Credentials */}
+              <section className="space-y-6">
+                 <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#FF5722] flex items-center gap-3">
+                    <span className="material-symbols-outlined text-sm" data-icon="key">key</span>
+                    Account Credentials
+                 </h3>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Field label="Login Username" name="username" value={profile.username} isEditing={isEditing} onChange={handleChange} icon="alternate_email" />
+                    <Field label="Login Password" name="password" type="text" value={profile.password} isEditing={isEditing} onChange={handleChange} icon="lock_open" />
+                 </div>
+                 <p className="text-[10px] text-slate-500 italic ml-2">These are your primary login credentials used for site access.</p>
+              </section>
+
+              {/* Personal Information */}
+              <section className="space-y-6 pt-6 border-t border-white/5">
+                 <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#1DB954] flex items-center gap-3">
+                    <span className="material-symbols-outlined text-sm" data-icon="person_search">person_search</span>
+                    Personal Information
+                 </h3>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Field label="First Name" name="firstName" value={profile.firstName} isEditing={isEditing} onChange={handleChange} />
+                    <Field label="Last Name" name="lastName" value={profile.lastName} isEditing={isEditing} onChange={handleChange} />
+                    <Field label="Email Address" name="email" type="email" value={profile.email} isEditing={isEditing} onChange={handleChange} icon="mail" />
+                    <Field label="Phone Number" name="phone" type="tel" value={profile.phone} isEditing={isEditing} onChange={handleChange} icon="call" placeholder="+91 0000000000" />
+                 </div>
+              </section>
+
+              {/* Academic Details */}
+              <section className="space-y-6 pt-6 border-t border-white/5">
+                 <h3 className="text-xs font-black uppercase tracking-[0.3em] text-teal-400 flex items-center gap-3">
+                    <span className="material-symbols-outlined text-sm" data-icon="school">school</span>
+                    Academic Record
+                 </h3>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-2 gap-4">
+                       <Field label="Roll Number" name="rollNo" value={profile.rollNo} isEditing={isEditing} onChange={handleChange} />
+                       <Field label="Class" name="className" value={profile.className} isEditing={isEditing} onChange={handleChange} />
+                    </div>
+                    <Field label="Engineering Branch" name="branch" value={profile.branch} isEditing={isEditing} onChange={handleChange} icon="account_tree" />
+                 </div>
+              </section>
+
+              {/* Emergency Contacts */}
+              <section className="space-y-6 pt-6 border-t border-white/5">
+                 <h3 className="text-xs font-black uppercase tracking-[0.3em] text-slate-400 flex items-center gap-3">
+                    <span className="material-symbols-outlined text-sm" data-icon="family_history">family_history</span>
+                    Parental Information
+                 </h3>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Field label="Guardian Name" name="parentName" value={profile.parentName} isEditing={isEditing} onChange={handleChange} icon="diversity_3" />
+                    <Field label="Guardian Phone" name="parentPhone" type="tel" value={profile.parentPhone} isEditing={isEditing} onChange={handleChange} icon="contact_emergency" />
+                 </div>
+              </section>
+
+            </motion.div>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
-<<<<<<< HEAD
-=======
 
 // Reusable Field Component
-function Field({ label, name, type = "text", value, isEditing, onChange, placeholder = "" }) {
+function Field({ label, name, type = "text", value, isEditing, onChange, placeholder = "", icon = null }) {
   return (
-    <motion.div layout className="space-y-1.5 flex flex-col">
-      <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">{label}</label>
-      {isEditing ? (
-        <input 
-          type={type}
-          name={name}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#1DB954] focus:ring-1 focus:ring-[#1DB954] transition-all"
-        />
-      ) : (
-        <p className="text-base font-semibold text-white px-2 py-3 border border-transparent">
-          {value || <span className="text-slate-500 italic">Not provided</span>}
-        </p>
-      )}
+    <motion.div layout className="space-y-2 flex flex-col group">
+      <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">{label}</label>
+      <div className="relative">
+        {icon && (
+          <span 
+            className={`material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-sm transition-colors ${
+              isEditing ? 'text-slate-400' : 'text-[#1DB954]/40'
+            }`} 
+            data-icon={icon}
+          >
+            {icon}
+          </span>
+        )}
+        {isEditing ? (
+          <input 
+            type={type}
+            name={name}
+            value={value}
+            onChange={onChange}
+            placeholder={placeholder}
+            className={`w-full ${icon ? 'pl-11' : 'px-4'} py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-bold tracking-tight focus:outline-none focus:border-[#1DB954] focus:ring-4 focus:ring-[#1DB954]/10 transition-all text-sm`}
+          />
+        ) : (
+          <div className={`${icon ? 'pl-11' : 'px-2'} py-4 text-base font-bold text-white border-b border-white/5 bg-transparent select-none`}>
+            {value || <span className="text-slate-600 italic font-medium">Not provided</span>}
+          </div>
+        )}
+      </div>
     </motion.div>
   );
 }
->>>>>>> 183da81 (Dashboard)

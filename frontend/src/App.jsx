@@ -9,7 +9,7 @@ import ProfilePage from './pages/ProfilePage';
 import SubjectDetailsPage from './pages/SubjectDetailsPage';
 import TaskViewerPage from './pages/TaskViewerPage';
 import NoticesPage from './pages/NoticesPage';
-import ProfilePage from './pages/ProfilePage';
+import ResourcesPage from './components/ResourcesPage';
 import DashboardLayout from './components/layout/DashboardLayout';
 
 // ─── Auth Guard ─────────────────────────────────────────────────────────────
@@ -44,13 +44,10 @@ export default function App() {
             <Route index element={<DashboardPage />} />
             <Route path="insights" element={<InsightsPage />} />
             <Route path="teacher" element={<TeacherPage />} />
-<<<<<<< HEAD
             <Route path="resources" element={<ResourcesPage />} />
             <Route path="notifications" element={<NotificationsPage />} />
             <Route path="settings" element={<SettingsPage />} />
-=======
             <Route path="notices" element={<NoticesPage />} />
->>>>>>> 183da81 (Dashboard)
             <Route path="subject/:subjectName" element={<SubjectDetailsPage />} />
             <Route path="task/:taskId" element={<TaskViewerPage />} />
             <Route path="progress" element={<DashboardPage />} />
