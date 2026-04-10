@@ -14,10 +14,47 @@ function getSession() {
 export default function Header() {
   const navigate = useNavigate();
   const session = getSession();
+  const [searchQuery, setSearchQuery] = useState('');
 
   const displayName = session?.firstName
     ? `${session.firstName} ${session.lastName || ''}`.trim()
     : session?.email?.split('@')[0] || 'Student';
+
+  const searchItems = [
+    { name: 'Dashboard', path: '/dashboard' },
+    { name: 'Teacher', path: '/dashboard/teacher' },
+    { name: 'Progress', path: '/dashboard/progress' },
+    { name: 'Resources', path: '/dashboard/resources' },
+    { name: 'Profile', path: '/dashboard/profile' },
+    { name: 'Settings', path: '/dashboard/settings' },
+    { name: 'Notifications', path: '/dashboard/notifications' },
+    // Academic Resources keywords
+    { name: 'Operating Systems', path: '/dashboard/resources' },
+    { name: 'Process Synchronization', path: '/dashboard/resources' },
+    { name: 'Graph Algorithms', path: '/dashboard/resources' },
+    { name: 'TCP/IP', path: '/dashboard/resources' },
+    { name: 'Database Architecture', path: '/dashboard/resources' },
+    { name: 'DBMS Optimization', path: '/dashboard/resources' },
+    { name: 'Theory of Computation', path: '/dashboard/resources' },
+    { name: 'Machine Learning', path: '/dashboard/resources' },
+  ];
+
+  const handleSearch = (e) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      const match = searchItems.find(item => 
+        item.name.toLowerCase().includes(query)
+      );
+
+      if (match) {
+        navigate(match.path);
+        setSearchQuery('');
+      } else if (query.includes('resource') || query.includes('note') || query.includes('lecture')) {
+        navigate('/dashboard/resources');
+        setSearchQuery('');
+      }
+    }
+  };
 
   const handleLogout = () => {
     // Clear all persisted session data
@@ -35,14 +72,29 @@ export default function Header() {
       <div className="flex items-center gap-6">
         <div className="relative hidden md:flex items-center bg-[#1a1a1a] rounded-2xl px-4 py-2 border border-white/5 focus-within:border-[#1DB954]/50 transition-all">
           <span className="material-symbols-outlined text-slate-400 mr-2 text-xl" data-icon="search">search</span>
-          <input className="bg-transparent border-none focus:ring-0 text-sm text-white placeholder-slate-500 w-48" placeholder="Search insights..." type="text"/>
+          <input 
+            className="bg-transparent border-none focus:ring-0 text-sm text-white placeholder-slate-500 w-48" 
+            placeholder="Search pages or resources..." 
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleSearch}
+          />
         </div>
 
         <div className="flex items-center gap-4 text-slate-400">
-          <motion.button whileHover={{ scale: 1.1, color: '#1DB954' }} className="p-2 rounded-xl bg-white/5">
+          <motion.button 
+            whileHover={{ scale: 1.1, color: '#1DB954' }} 
+            onClick={() => navigate('/dashboard/notifications')}
+            className="p-2 rounded-xl bg-white/5"
+          >
             <span className="material-symbols-outlined" data-icon="notifications">notifications</span>
           </motion.button>
-          <motion.button whileHover={{ scale: 1.1, color: '#1DB954' }} className="p-2 rounded-xl bg-white/5">
+          <motion.button 
+            whileHover={{ scale: 1.1, color: '#1DB954' }} 
+            onClick={() => navigate('/dashboard/settings')}
+            className="p-2 rounded-xl bg-white/5"
+          >
             <span className="material-symbols-outlined" data-icon="settings">settings</span>
           </motion.button>
         </div>

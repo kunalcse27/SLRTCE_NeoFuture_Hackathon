@@ -3,6 +3,9 @@ import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import InsightsPage from './pages/InsightsPage';
 import TeacherPage from './pages/TeacherPage';
+import NotificationsPage from './pages/NotificationsPage';
+import SettingsPage from './pages/SettingsPage';
+import ProfilePage from './pages/ProfilePage';
 import SubjectDetailsPage from './pages/SubjectDetailsPage';
 import TaskViewerPage from './pages/TaskViewerPage';
 import ResourcesPage from './components/ResourcesPage';
@@ -41,10 +44,12 @@ export default function App() {
             <Route path="insights" element={<InsightsPage />} />
             <Route path="teacher" element={<TeacherPage />} />
             <Route path="resources" element={<ResourcesPage />} />
+            <Route path="notifications" element={<NotificationsPage />} />
+            <Route path="settings" element={<SettingsPage />} />
             <Route path="subject/:subjectName" element={<SubjectDetailsPage />} />
             <Route path="task/:taskId" element={<TaskViewerPage />} />
             <Route path="progress" element={<DashboardPage />} />
-            <Route path="profile" element={<DashboardPage />} />
+            <Route path="profile" element={<ProfilePage />} />
           </Route>
         </Route>
 
