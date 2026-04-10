@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 
 export default function Header() {
   const navigate = useNavigate();
@@ -7,14 +7,19 @@ export default function Header() {
     navigate('/login');
   };
 
+  const navClass = ({ isActive }) => 
+    isActive 
+      ? "text-teal-400 font-bold border-b-2 border-teal-400 hover:text-teal-300 transition-colors duration-300 active:scale-95 duration-200"
+      : "text-slate-400 font-medium hover:text-teal-300 transition-colors duration-300 active:scale-95 duration-200";
+
   return (
     <header className="fixed top-0 left-64 right-0 z-40 bg-slate-900/60 backdrop-blur-xl shadow-xl shadow-slate-950/20 px-8 py-4 flex justify-between items-center font-manrope tracking-tight font-medium">
       <div className="flex items-center gap-8">
         <div className="text-2xl font-bold tracking-tighter text-teal-400">ALWS</div>
         <nav className="hidden md:flex items-center gap-6">
-          <a className="text-teal-400 font-bold border-b-2 border-teal-400 hover:text-teal-300 transition-colors duration-300 active:scale-95 duration-200" href="#">Overview</a>
-          <a className="text-slate-400 font-medium hover:text-teal-300 transition-colors duration-300 active:scale-95 duration-200" href="#">Insights</a>
-          <a className="text-slate-400 font-medium hover:text-teal-300 transition-colors duration-300 active:scale-95 duration-200" href="#">History</a>
+          <NavLink to="/dashboard" className={navClass}>Overview</NavLink>
+          <NavLink to="/insights" className={navClass}>Insights</NavLink>
+          <NavLink to="#history" className={navClass}>History</NavLink>
         </nav>
       </div>
       <div className="flex items-center gap-6">
