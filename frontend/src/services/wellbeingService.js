@@ -1,5 +1,3 @@
-import api from './api';
-
 /**
  * Wellbeing Service
  * 
@@ -9,10 +7,9 @@ import api from './api';
 const wellbeingService = {
   /**
    * Submit student text/journal entry for analysis
-   * @param {string} text - The raw text from the student
    * @returns {Promise} - Analysis result (sentiment, entities, risk level)
    */
-  analyzeText: async (text) => {
+  analyzeText: async () => {
     try {
       // Mock response for demo/development
       // Replace with actual API call: const response = await api.post('/analyze', { text });
