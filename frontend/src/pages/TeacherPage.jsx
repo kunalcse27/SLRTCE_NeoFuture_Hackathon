@@ -190,15 +190,19 @@ export default function TeacherPage() {
                         )}
                       </div>
                       <div
-                        className={`flex-grow ${
+                        className={`flex-grow space-y-1 ${
                           task.completed ? "line-through text-slate-500" : ""
                         }`}
                       >
-                        <h5 className="font-semibold text-sm">{task.title}</h5>
-                        <p className="text-xs mt-1">{task.description}</p>
+                        <p className="font-semibold text-base">
+                          Title:- {task.title}
+                        </p>
+                        <p className="text-sm">
+                          Description:- {task.description}
+                        </p>
                         {task.attachment && (
-                          <p className="text-xs mt-1 text-blue-400">
-                            Attachment: {task.attachment.name}
+                          <p className="text-sm text-blue-400">
+                            Attachment:- {task.attachment.name}
                           </p>
                         )}
                       </div>
