@@ -30,12 +30,6 @@ export default function Header() {
     <header className="fixed top-0 left-0 lg:left-64 right-0 z-40 bg-[#121212]/80 backdrop-blur-2xl border-b border-[#222] px-8 py-4 flex justify-between items-center font-manrope tracking-tight font-medium">
       <div className="flex items-center gap-8">
         <div className="text-xl font-bold tracking-tighter text-[#1DB954] lg:hidden">ALWS</div>
-        <nav className="hidden xl:flex items-center gap-6">
-          <a className="text-[#1DB954] font-bold relative group" href="#">
-            Overview
-            <motion.div layoutId="activeNav" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#1DB954]" />
-          </a>
-        </nav>
       </div>
 
       <div className="flex items-center gap-6">
