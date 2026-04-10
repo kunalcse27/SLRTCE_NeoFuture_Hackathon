@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom';
 export default function Sidebar() {
   const navItems = [
     { name: 'Dashboard', icon: 'dashboard', path: '/dashboard' },
+    { name: 'Teacher', icon: 'school', path: '/teacher' },
     { name: 'Resources', icon: 'auto_stories', path: '/resources' },
     { name: 'Support', icon: 'psychology_alt', path: '/support' },
   ];
