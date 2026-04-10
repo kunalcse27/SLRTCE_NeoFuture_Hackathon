@@ -194,14 +194,14 @@ export default function TeacherPage() {
                           task.completed ? "line-through text-slate-500" : ""
                         }`}
                       >
-                        <p className="font-semibold text-base">
+                        <p className="font-semibold text-xl text-white">
                           Title:- {task.title}
                         </p>
-                        <p className="text-sm">
+                        <p className="text-xl text-white">
                           Description:- {task.description}
                         </p>
                         {task.attachment && (
-                          <p className="text-sm text-blue-400">
+                          <p className="text-xl text-white">
                             Attachment:- {task.attachment.name}
                           </p>
                         )}
