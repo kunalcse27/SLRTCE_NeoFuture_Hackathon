@@ -3,6 +3,8 @@ import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import InsightsPage from './pages/InsightsPage';
 import TeacherPage from './pages/TeacherPage';
+import SubjectDetailsPage from './pages/SubjectDetailsPage';
+import TaskViewerPage from './pages/TaskViewerPage';
 import ResourcesPage from './components/ResourcesPage';
 import DashboardLayout from './components/layout/DashboardLayout';
 
@@ -34,11 +36,15 @@ export default function App() {
 
         {/* Protected: all nested routes go through RequireAuth + DashboardLayout */}
         <Route element={<RequireAuth />}>
-          <Route element={<DashboardLayout />}>
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/insights"  element={<InsightsPage />} />
-            <Route path="/teacher"   element={<TeacherPage />} />
-            <Route path="/resources" element={<ResourcesPage />} />
+          <Route path="/dashboard" element={<DashboardLayout />}>
+            <Route index element={<DashboardPage />} />
+            <Route path="insights" element={<InsightsPage />} />
+            <Route path="teacher" element={<TeacherPage />} />
+            <Route path="resources" element={<ResourcesPage />} />
+            <Route path="subject/:subjectName" element={<SubjectDetailsPage />} />
+            <Route path="task/:taskId" element={<TaskViewerPage />} />
+            <Route path="progress" element={<DashboardPage />} />
+            <Route path="profile" element={<DashboardPage />} />
           </Route>
         </Route>
 
