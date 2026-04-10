@@ -1,16 +1,42 @@
-# React + Vite
+# ALWS - Adaptive Learning & Wellbeing System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Adaptive Learning & Wellbeing System (ALWS) is a unified platform designed to track cognitive performance, emotional stability, and behavioral trends to provide actionable mental health insights.
 
-Currently, two official plugins are available:
+## Project Structure
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### 🖥️ Frontend (React + Vite)
+Located in `/frontend`. Consolidated for ease of demo management.
+- **`src/pages/`**: Self-contained page views (Dashboard, Insights, Login).
+- **`src/components/layout/`**: Shared shell components (Sidebar, Header).
+- **`src/services/`**: API communication layer.
+- **Animations**: Powered by `framer-motion`.
 
-## React Compiler
+### 🛡️ Backend (Node.js + Express)
+Located in `/backend`. Structured using a modular MVC pattern.
+- **`models/`**: Mongoose data schemas.
+- **`controllers/`**: Business logic handlers.
+- **`routes/`**: API endpoint definitions.
+- **`config/`**: Database and environment configuration.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Getting Started
 
-## Expanding the ESLint configuration
+### 1. Backend Setup
+```bash
+cd backend
+npm install
+npm start (or nodemon server.js)
+```
+*Note: Requires a `MONGO_URL` in `.env`.*
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 2. Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+## Demo Highlights
+- **Dynamic Sentiment Gauge**: Visualizes mood stability from Green to Red.
+- **Cognitive Insights**: AI-generated suggestions based on behavioral patterns.
+- **Synchronized Alerts**: Real-time risk detection for students.
+- **Premium Architecture**: Built for scale and easy integration.

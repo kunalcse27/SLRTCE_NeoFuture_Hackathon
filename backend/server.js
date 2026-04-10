@@ -1,20 +1,36 @@
 import express from "express";
-import connectDB from "./config/db.js";
+import cors from "cors";
 import dotenv from "dotenv";
+import connectDB from "./config/db.js";
+
+// Routes
+import wellbeingRoutes from "./routes/wellbeing.routes.js";
 
 dotenv.config();
 
-const app=express();
-
+// Initialize DB
 connectDB();
 
+const app = express();
+
+// Middleware
+app.use(cors());
 app.use(express.json());
 
-app.get("/",(req,res)=>{
-    res.send("Backend Running");
+// API Routes
+app.use("/api/wellbeing", wellbeingRoutes);
+
+app.get("/", (req, res) => {
+    res.send("ALWS Backend API Running");
 });
 
-const PORT=3000;
-app.listen(PORT, ()=>{
-    console.log("Server running on port 3000");
-})
+// Error handling middleware (placeholder)
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
