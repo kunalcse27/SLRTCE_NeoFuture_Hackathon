@@ -18,7 +18,7 @@ export default function LoginPage() {
 
   // ── Auto-redirect if session already exists ──────────────────────────────
   useEffect(() => {
-    if (localStorage.getItem('alws_session') || sessionStorage.getItem('alws_session')) {
+    if (localStorage.getItem('alws_session') || sessionStorage.getItem('alws_session') || localStorage.getItem('token')) {
       navigate('/dashboard', { replace: true });
     }
   }, [navigate]);
@@ -27,6 +27,9 @@ export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
   
   // Common Form states
   const [email, setEmail] = useState('');
@@ -38,31 +41,59 @@ export default function LoginPage() {
   const [courseBranch, setCourseBranch] = useState('');
   const [profilePic, setProfilePic] = useState(null);
 
-  const handleAuth = (e) => {
+  const handleAuth = async (e) => {
     e.preventDefault();
+    setError('');
 
-    // Build the session object to persist securely
-    const existingSession = getSafeSession();
-    const session = {
-      email,
-      firstName: isLogin ? (existingSession.firstName || '') : firstName,
-      lastName:  isLogin ? (existingSession.lastName  || '') : lastName,
-      courseBranch: isLogin ? (existingSession.courseBranch || '') : courseBranch,
-      loggedInAt: new Date().toISOString(),
-    };
-
-    // Persist in localStorage so the session survives page refreshes
-    if (rememberMe || !isLogin) {
-      localStorage.setItem('alws_session', JSON.stringify(session));
+    if (isLogin) {
+      setIsLoading(true);
+      try {
+        const response = await fetch('http://localhost:3000/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await response.json();
+        
+        if (response.ok) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          navigate('/dashboard', { replace: true });
+        } else {
+          setError(data.message || 'Invalid credentials');
+        }
+      } catch (err) {
+        setError('Network error. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
     } else {
-      // If "Remember me" is unchecked we still save for this tab via sessionStorage
-      sessionStorage.setItem('alws_session', JSON.stringify(session));
-      // But remove any old persistent copy
-      localStorage.removeItem('alws_session');
+      setIsLoading(true);
+      setSuccessMsg('');
+      try {
+        const response = await fetch('http://localhost:3000/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ firstName, lastName, email, courseBranch, password })
+        });
+        const data = await response.json();
+        
+        if (response.ok) {
+          setSuccessMsg('Registration successful! Redirecting to login...');
+          setTimeout(() => {
+            setIsLogin(true);
+            setSuccessMsg('');
+            setError('');
+          }, 2000);
+        } else {
+          setError(data.message || 'Registration failed');
+        }
+      } catch (err) {
+        setError('Network error. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
     }
-
-    console.log(isLogin ? 'Logged in' : 'Signed up', session);
-    navigate('/dashboard', { replace: true });
   };
 
   const handleFileChange = (e) => {
@@ -289,11 +320,16 @@ export default function LoginPage() {
                         </span>
                       </div>
 
-                      <button type="submit" className="w-full bg-secondary text-on-secondary py-4.5 rounded-2xl font-black flex items-center justify-center gap-3 shadow-2xl shadow-secondary/20 hover:shadow-secondary/40 hover:scale-[1.02] active:scale-[0.98] transition-all text-lg mt-4 group">
-                        <span>Enter Dashboard</span>
-                        <span className="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+                      <button disabled={isLoading} type="submit" className={`w-full bg-secondary text-on-secondary py-4.5 rounded-2xl font-black flex items-center justify-center gap-3 shadow-2xl shadow-secondary/20 ${isLoading ? 'opacity-70 cursor-not-allowed transform-none' : 'hover:shadow-secondary/40 hover:scale-[1.02] active:scale-[0.98]'} transition-all text-lg mt-4 group`}>
+                        <span>{isLoading ? 'Entering Dashboard...' : 'Enter Dashboard'}</span>
+                        {!isLoading && <span className="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>}
                       </button>
                     </form>
+                    {error && (
+                      <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-sm font-medium text-center relative z-10">
+                        {error}
+                      </div>
+                    )}
                 </motion.div>
               ) : (
                 <motion.div
@@ -379,11 +415,22 @@ export default function LoginPage() {
                       />
                     </div>
 
-                    <button type="submit" className="w-full bg-secondary text-on-secondary py-4 rounded-2xl font-black flex items-center justify-center gap-3 shadow-2xl shadow-secondary/20 hover:shadow-secondary/40 hover:scale-[1.02] active:scale-[0.98] transition-all text-lg mt-6 group">
-                      <span>Create My Account</span>
-                      <span className="material-symbols-outlined text-2xl group-hover:scale-125 transition-transform" data-icon="person_add">person_add</span>
+                    <button disabled={isLoading} type="submit" className={`w-full bg-secondary text-on-secondary py-4 rounded-2xl font-black flex items-center justify-center gap-3 shadow-2xl shadow-secondary/20 transition-all text-lg mt-6 group ${isLoading ? 'opacity-70 cursor-not-allowed transform-none' : 'hover:shadow-secondary/40 hover:scale-[1.02] active:scale-[0.98]'}`}>
+                      <span>{isLoading ? 'Creating Account...' : 'Create My Account'}</span>
+                      {!isLoading && <span className="material-symbols-outlined text-2xl group-hover:scale-125 transition-transform" data-icon="person_add">person_add</span>}
                     </button>
                   </form>
+
+                  {error && (
+                    <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-sm font-medium text-center relative z-10">
+                      {error}
+                    </div>
+                  )}
+                  {successMsg && (
+                    <div className="mt-4 p-3 bg-green-500/10 border border-green-500/20 rounded-xl text-green-500 text-sm font-medium text-center relative z-10">
+                      {successMsg}
+                    </div>
+                  )}
 
                   {/* Social Sign Ups */}
                   <div className="flex flex-col items-center gap-4 mt-8 relative z-10">

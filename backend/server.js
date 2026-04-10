@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
+import authRoutes from "./routes/authRoutes.js";
 
 // Routes
 import wellbeingRoutes from "./routes/wellbeing.routes.js";
@@ -16,12 +17,13 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use("/api/auth", authRoutes);
 
 // API Routes
 app.use("/api/wellbeing", wellbeingRoutes);
 
 app.get("/", (req, res) => {
-    res.send("ALWS Backend API Running");
+  res.send("ALWS Backend API Running");
 });
 
 // Error handling middleware (placeholder)
@@ -32,5 +34,5 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

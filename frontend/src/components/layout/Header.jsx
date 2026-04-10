@@ -61,6 +61,8 @@ export default function Header() {
     // Clear all persisted session data
     localStorage.removeItem('alws_session');
     sessionStorage.removeItem('alws_session');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     navigate('/login', { replace: true });
   };
 
