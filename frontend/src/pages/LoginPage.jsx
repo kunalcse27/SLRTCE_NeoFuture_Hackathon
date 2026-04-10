@@ -1,14 +1,22 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  
+
+  // ── Auto-redirect if session already exists ──────────────────────────────
+  useEffect(() => {
+    if (localStorage.getItem('alws_session')) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [navigate]);
+
   // View states
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   
   // Common Form states
   const [email, setEmail] = useState('');
@@ -22,10 +30,30 @@ export default function LoginPage() {
 
   const handleAuth = (e) => {
     e.preventDefault();
-    console.log(isLogin ? 'Logging in' : 'Signing up', {
-      email, password, firstName, lastName, courseBranch, profilePic
-    });
-    navigate('/dashboard');
+
+    // Build the session object to persist
+    const session = {
+      email,
+      firstName: isLogin ? (JSON.parse(localStorage.getItem('alws_session') || '{}').firstName || '') : firstName,
+      lastName:  isLogin ? (JSON.parse(localStorage.getItem('alws_session') || '{}').lastName  || '') : lastName,
+      courseBranch: isLogin
+        ? (JSON.parse(localStorage.getItem('alws_session') || '{}').courseBranch || '')
+        : courseBranch,
+      loggedInAt: new Date().toISOString(),
+    };
+
+    // Persist in localStorage so the session survives page refreshes
+    if (rememberMe || !isLogin) {
+      localStorage.setItem('alws_session', JSON.stringify(session));
+    } else {
+      // If "Remember me" is unchecked we still save for this tab via sessionStorage
+      sessionStorage.setItem('alws_session', JSON.stringify(session));
+      // But remove any old persistent copy
+      localStorage.removeItem('alws_session');
+    }
+
+    console.log(isLogin ? 'Logged in' : 'Signed up', session);
+    navigate('/dashboard', { replace: true });
   };
 
   const handleFileChange = (e) => {
@@ -200,7 +228,7 @@ export default function LoginPage() {
                     <span className="relative bg-[#010e24] px-4 text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.3em]">Or login with email</span>
                   </div>
 
-                    <div className="relative z-10 space-y-5">
+                    <form onSubmit={handleAuth} className="relative z-10 space-y-5">
                       <div className="space-y-2">
                         <label className="text-[12px] font-bold text-on-surface-variant uppercase tracking-wider block ml-1" htmlFor="email">Email Address</label>
                         <div className="group relative">
@@ -230,11 +258,33 @@ export default function LoginPage() {
                         </div>
                       </div>
 
+                      {/* Remember Me */}
+                      <div className="flex items-center gap-3 mt-1 ml-1">
+                        <button
+                          type="button"
+                          role="checkbox"
+                          aria-checked={rememberMe}
+                          onClick={() => setRememberMe(v => !v)}
+                          className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
+                            rememberMe
+                              ? 'bg-secondary border-secondary shadow-md shadow-secondary/30'
+                              : 'border-outline-variant/40 bg-surface-container-high/30'
+                          }`}
+                        >
+                          {rememberMe && (
+                            <span className="material-symbols-outlined text-[14px] text-on-secondary font-black" data-icon="check">check</span>
+                          )}
+                        </button>
+                        <span className="text-sm font-medium text-on-surface-variant select-none">
+                          Remember me on this device
+                        </span>
+                      </div>
+
                       <button type="submit" className="w-full bg-secondary text-on-secondary py-4.5 rounded-2xl font-black flex items-center justify-center gap-3 shadow-2xl shadow-secondary/20 hover:shadow-secondary/40 hover:scale-[1.02] active:scale-[0.98] transition-all text-lg mt-4 group">
                         <span>Enter Dashboard</span>
                         <span className="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
                       </button>
-                    </div>
+                    </form>
                 </motion.div>
               ) : (
                 <motion.div

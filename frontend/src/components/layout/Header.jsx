@@ -1,11 +1,29 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
+// ─── Read session from either localStorage (Remember Me) or sessionStorage ───
+function getSession() {
+  try {
+    const raw = localStorage.getItem('alws_session') || sessionStorage.getItem('alws_session');
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function Header() {
   const navigate = useNavigate();
+  const session = getSession();
+
+  const displayName = session?.firstName
+    ? `${session.firstName} ${session.lastName || ''}`.trim()
+    : session?.email?.split('@')[0] || 'Student';
 
   const handleLogout = () => {
-    navigate('/login');
+    // Clear all persisted session data
+    localStorage.removeItem('alws_session');
+    sessionStorage.removeItem('alws_session');
+    navigate('/login', { replace: true });
   };
 
   return (
@@ -39,8 +57,8 @@ export default function Header() {
 
         <div className="flex items-center gap-3 pl-4 border-l border-slate-800/30">
           <div className="text-right hidden sm:block">
-            <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Aarav</p>
-            <p className="text-xs font-bold text-teal-400">Lead Admin</p>
+            <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">{displayName}</p>
+            <p className="text-xs font-bold text-teal-400">{session?.courseBranch || 'Student'}</p>
           </div>
           <div className="relative group cursor-pointer">
             <img 

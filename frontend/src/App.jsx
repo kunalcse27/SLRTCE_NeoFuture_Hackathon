@@ -1,31 +1,46 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import DashboardLayout from './components/layout/DashboardLayout';
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import InsightsPage from './pages/InsightsPage';
+import ResourcesPage from './components/ResourcesPage';
+import DashboardLayout from './components/layout/DashboardLayout';
 
-/**
- * App Component
- * 
- * Main routing configuration for ALWS.
- * Pages are consolidated into single files for ease of management.
- */
+// ─── Auth Guard ─────────────────────────────────────────────────────────────
+// Checks both localStorage (Remember Me) and sessionStorage (tab-only session).
+function RequireAuth() {
+  const session =
+    localStorage.getItem('alws_session') || sessionStorage.getItem('alws_session');
+  if (!session) return <Navigate to="/login" replace />;
+  return <Outlet />;
+}
+
+// ─── Root redirect ─────────────────────────────────────────────────────────
+function RootRedirect() {
+  const session =
+    localStorage.getItem('alws_session') || sessionStorage.getItem('alws_session');
+  return <Navigate to={session ? '/dashboard' : '/login'} replace />;
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Routes */}
+        {/* Root: smart redirect */}
+        <Route path="/" element={<RootRedirect />} />
+
+        {/* Public */}
         <Route path="/login" element={<LoginPage />} />
-        
-        {/* Protected Dashboard Routes with Layout Wrapper */}
-        <Route path="/dashboard" element={<DashboardLayout />}>
-          <Route index element={<DashboardPage />} />
-          <Route path="insights" element={<InsightsPage />} />
-          {/* Add more dashboard sub-pages here */}
+
+        {/* Protected: all nested routes go through RequireAuth + DashboardLayout */}
+        <Route element={<RequireAuth />}>
+          <Route element={<DashboardLayout />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/insights"  element={<InsightsPage />} />
+            <Route path="/resources" element={<ResourcesPage />} />
+          </Route>
         </Route>
 
-        {/* Fallback Redirects */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        {/* Fallback */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
