@@ -37,8 +37,14 @@ const STUDENT_DATA = [
 
 export default function TeacherPage() {
   const [tasks, setTasks] = useState(TEACHER_TASKS);
+  const [assignments, setAssignments] = useState([
+    { id: 1, title: "Organic Chemistry Basics", dueDate: "2026-04-15", assignedToCount: 3, subject: "Chemistry", status: "Active" },
+    { id: 2, title: "Kinematics Problem Set", dueDate: "2026-04-12", assignedToCount: 4, subject: "Physics", status: "Active" },
+  ]);
   const [selectedSubject, setSelectedSubject] = useState('Chemistry');
   const [newTask, setNewTask] = useState('');
+  const [showAssignmentModal, setShowAssignmentModal] = useState(false);
+  const [newAssignment, setNewAssignment] = useState({ title: '', dueDate: '', description: '' });
 
   const subjects = ['Chemistry', 'Physics', 'Mathematics', 'Biology'];
 
@@ -48,6 +54,33 @@ export default function TeacherPage() {
     const task = { id: Date.now(), text: newTask, completed: false, priority: "Medium" };
     setTasks([task, ...tasks]);
     setNewTask('');
+  };
+
+  const [notification, setNotification] = useState(null);
+
+  const showToast = (message) => {
+    setNotification(message);
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  const createAssignment = (e) => {
+    e.preventDefault();
+    if (!newAssignment.title) return;
+    const assgn = {
+      id: Date.now(),
+      ...newAssignment,
+      subject: selectedSubject,
+      assignedToCount: STUDENT_DATA.length,
+      status: "Active"
+    };
+    setAssignments([assgn, ...assignments]);
+    setShowAssignmentModal(false);
+    setNewAssignment({ title: '', dueDate: '', description: '' });
+    showToast("Assignment deployed to all students!");
+  };
+
+  const assignToStudent = (studentName) => {
+    showToast(`Task assigned to ${studentName}`);
   };
 
   const toggleTask = (id) => {
@@ -70,12 +103,21 @@ export default function TeacherPage() {
           </h2>
           <p className="text-on-surface-variant max-w-md font-label text-base">Manage your daily tasks and track class-wide academic performance.</p>
         </motion.div>
-        <div className="flex gap-3">
+        <div className="flex gap-4">
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowAssignmentModal(true)}
+            className="px-6 py-3 rounded-full bg-secondary text-on-secondary font-bold flex items-center gap-2 shadow-lg shadow-secondary/20 transition-all"
+          >
+            <span className="material-symbols-outlined" data-icon="add_task">add_task</span>
+            Create Assignment
+          </motion.button>
           <div className="relative group">
             <select 
               value={selectedSubject}
               onChange={(e) => setSelectedSubject(e.target.value)}
-              className="px-6 py-3 rounded-full bg-surface-container-highest border border-outline-variant/15 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-secondary/50 transition-all cursor-pointer"
+              className="px-6 py-3 rounded-full bg-surface-container-highest border border-outline-variant/15 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-secondary/50 transition-all cursor-pointer h-full"
             >
               {subjects.map(sub => <option key={sub} value={sub} className="bg-surface-container-highest">{sub}</option>)}
             </select>
@@ -84,13 +126,14 @@ export default function TeacherPage() {
       </div>
 
       <div className="grid grid-cols-12 gap-8">
-        {/* Pending Tasks Section */}
-        <div className="col-span-12 lg:col-span-4 space-y-6">
+        {/* Pending Tasks & Recent Assignments */}
+        <div className="col-span-12 lg:col-span-4 space-y-8">
+          {/* Teacher's Personal Tasks */}
           <section className="glass-panel p-8 rounded-[2.5rem] border border-outline-variant/15 flex flex-col gap-6">
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-bold font-headline text-on-surface flex items-center gap-3">
                 <span className="material-symbols-outlined text-secondary" data-icon="checklist">checklist</span>
-                Pending Tasks
+                Personal Tasks
               </h3>
               <span className="text-xs font-bold px-3 py-1 rounded-full bg-surface-container-highest border border-outline-variant/20 text-slate-400">
                 {tasks.filter(t => !t.completed).length} Pending
@@ -100,7 +143,7 @@ export default function TeacherPage() {
             <form onSubmit={addTask} className="relative group">
               <input 
                 type="text" 
-                placeholder="Add a new task..." 
+                placeholder="Add personal task..." 
                 value={newTask}
                 onChange={(e) => setNewTask(e.target.value)}
                 className="w-full px-5 py-4 bg-surface-container-high/40 border border-outline-variant/30 rounded-2xl focus:ring-4 focus:ring-secondary/10 focus:border-secondary outline-none transition-all duration-300 text-white font-medium placeholder:text-on-surface-variant/40 backdrop-blur-sm"
@@ -110,7 +153,7 @@ export default function TeacherPage() {
               </button>
             </form>
 
-            <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
               <AnimatePresence mode="popLayout">
                 {tasks.map((task) => (
                   <motion.div 
@@ -148,6 +191,34 @@ export default function TeacherPage() {
               </AnimatePresence>
             </div>
           </section>
+
+          {/* Recent Class Assignments */}
+          <section className="glass-panel p-8 rounded-[2.5rem] border border-outline-variant/15 flex flex-col gap-6">
+            <h3 className="text-xl font-bold font-headline text-on-surface flex items-center gap-3">
+              <span className="material-symbols-outlined text-tertiary" data-icon="assignment">assignment</span>
+              Active Assignments
+            </h3>
+            <div className="space-y-4">
+              {assignments.map((assignment) => (
+                <div key={assignment.id} className="p-4 rounded-2xl bg-surface-container-highest/30 border border-outline-variant/10 space-y-2 hover:bg-surface-container-highest/50 transition-all cursor-pointer group">
+                  <div className="flex justify-between items-start">
+                    <h4 className="font-bold text-on-surface text-sm group-hover:text-tertiary transition-colors">{assignment.title}</h4>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-tertiary/10 text-tertiary">{assignment.status}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[11px] text-on-surface-variant font-medium">
+                    <span className="flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[14px]" data-icon="group">group</span>
+                      {assignment.assignedToCount} Students
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[14px]" data-icon="calendar_today">calendar_today</span>
+                      Due {assignment.dueDate}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
 
         {/* Student Performance Table Section */}
@@ -157,9 +228,9 @@ export default function TeacherPage() {
               <div className="space-y-1">
                 <h3 className="text-xl font-bold font-headline text-on-surface flex items-center gap-3">
                   <span className="material-symbols-outlined text-tertiary" data-icon="analytics">analytics</span>
-                  Student Performance: {selectedSubject}
+                  Student Progress & Assignment
                 </h3>
-                <p className="text-xs text-on-surface-variant font-label uppercase tracking-widest leading-none">Class Analytics Overview</p>
+                <p className="text-xs text-on-surface-variant font-label uppercase tracking-widest leading-none">Class Performance Control</p>
               </div>
             </div>
 
@@ -169,9 +240,9 @@ export default function TeacherPage() {
                   <tr className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
                     <th className="px-6 py-2">Student Name</th>
                     <th className="px-6 py-2">Attendance</th>
-                    <th className="px-6 py-2 text-center">Pending Assignments</th>
+                    <th className="px-6 py-2 text-center">Pending</th>
                     <th className="px-6 py-2">Performance</th>
-                    <th className="px-6 py-2">Status</th>
+                    <th className="px-6 py-2 text-center">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -225,10 +296,16 @@ export default function TeacherPage() {
                             <span className={`text-sm font-black ${status.text}`}>{perf}%</span>
                           </div>
                         </td>
-                        <td className="px-6 py-5 first:rounded-l-2xl last:rounded-r-2xl">
-                          <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${status.border} ${status.text} ${status.bg}`}>
-                            {status.label}
-                          </span>
+                        <td className="px-6 py-5 text-center first:rounded-l-2xl last:rounded-r-2xl">
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => assignToStudent(student.name)}
+                            className="p-2 rounded-xl bg-secondary/10 text-secondary border border-secondary/20 hover:bg-secondary hover:text-on-secondary transition-all group/btn"
+                            title="Assign Task"
+                          >
+                            <span className="material-symbols-outlined text-[20px]" data-icon="assignment_add">assignment_add</span>
+                          </motion.button>
                         </td>
                       </motion.tr>
                     );
@@ -239,6 +316,112 @@ export default function TeacherPage() {
           </section>
         </div>
       </div>
+
+      {/* Create Assignment Modal */}
+      <AnimatePresence>
+        {showAssignmentModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowAssignmentModal(false)}
+              className="absolute inset-0 bg-background/80 backdrop-blur-md"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-lg glass-panel p-10 rounded-[2.5rem] border border-outline-variant/20 shadow-2xl"
+            >
+              <div className="flex justify-between items-start mb-8">
+                <div className="space-y-1">
+                  <h3 className="text-2xl font-black text-on-surface font-headline">New Assignment</h3>
+                  <p className="text-sm text-on-surface-variant font-medium">Create and broadcast task to all students in {selectedSubject}.</p>
+                </div>
+                <button 
+                  onClick={() => setShowAssignmentModal(false)}
+                  className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center hover:bg-rose-500/10 hover:text-rose-400 transition-colors"
+                >
+                  <span className="material-symbols-outlined" data-icon="close">close</span>
+                </button>
+              </div>
+
+              <form onSubmit={createAssignment} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-xs font-black uppercase tracking-widest text-secondary ml-1">Assignment Title</label>
+                  <input 
+                    type="text"
+                    required
+                    placeholder="e.g., Week 12 Synthesis Lab"
+                    value={newAssignment.title}
+                    onChange={(e) => setNewAssignment({ ...newAssignment, title: e.target.value })}
+                    className="w-full px-6 py-4 bg-surface-container-high/40 border border-outline-variant/30 rounded-2xl focus:ring-4 focus:ring-secondary/10 focus:border-secondary outline-none transition-all text-white font-medium"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-widest text-secondary ml-1">Due Date</label>
+                    <input 
+                      type="date"
+                      required
+                      value={newAssignment.dueDate}
+                      onChange={(e) => setNewAssignment({ ...newAssignment, dueDate: e.target.value })}
+                      className="w-full px-6 py-4 bg-surface-container-high/40 border border-outline-variant/30 rounded-2xl focus:ring-4 focus:ring-secondary/10 focus:border-secondary outline-none transition-all text-white font-medium"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-widest text-secondary ml-1">Points</label>
+                    <input 
+                      type="number"
+                      placeholder="100"
+                      className="w-full px-6 py-4 bg-surface-container-high/40 border border-outline-variant/30 rounded-2xl focus:ring-4 focus:ring-secondary/10 focus:border-secondary outline-none transition-all text-white font-medium"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-black uppercase tracking-widest text-secondary ml-1">Instructions (Optional)</label>
+                  <textarea 
+                    rows="3"
+                    value={newAssignment.description}
+                    onChange={(e) => setNewAssignment({ ...newAssignment, description: e.target.value })}
+                    placeholder="Briefly describe the task objectives..."
+                    className="w-full px-6 py-4 bg-surface-container-high/40 border border-outline-variant/30 rounded-2xl focus:ring-4 focus:ring-secondary/10 focus:border-secondary outline-none transition-all text-white font-medium resize-none"
+                  />
+                </div>
+
+                <motion.button 
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  className="w-full py-5 rounded-2xl bg-secondary text-on-secondary font-black text-sm uppercase tracking-[0.2em] shadow-xl shadow-secondary/20 hover:shadow-secondary/40 transition-all mt-4"
+                >
+                  Deploy Assignment
+                </motion.button>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Notification Toast */}
+      <AnimatePresence>
+        {notification && (
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] px-8 py-4 glass-panel border border-secondary/30 rounded-full shadow-2xl flex items-center gap-4"
+          >
+            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
+              <span className="material-symbols-outlined text-sm text-on-secondary font-bold" data-icon="check">check</span>
+            </div>
+            <span className="text-sm font-bold text-on-surface">{notification}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
