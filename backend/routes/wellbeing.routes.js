@@ -1,5 +1,10 @@
 import express from 'express';
-import { getWellbeingStats, submitJournalEntry } from '../controllers/wellbeingController.js';
+import { 
+  getWellbeingStats, 
+  submitJournalEntry, 
+  chatWithMira, 
+  analyzeSentiment 
+} from '../controllers/wellbeingController.js';
 
 const router = express.Router();
 
@@ -14,5 +19,17 @@ router.get('/stats', getWellbeingStats);
  * @desc Submit a new mental health journal entry
  */
 router.post('/journal', submitJournalEntry);
+
+/**
+ * @route POST /api/wellbeing/chat
+ * @desc AI Chatbot for mental health support
+ */
+router.post('/chat', chatWithMira);
+
+/**
+ * @route POST /api/wellbeing/analyze
+ * @desc Automated sentiment and stress analysis
+ */
+router.post('/analyze', analyzeSentiment);
 
 export default router;
