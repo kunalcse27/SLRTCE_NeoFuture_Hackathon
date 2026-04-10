@@ -11,6 +11,12 @@ export default function TeacherPage() {
   const [currentSubjectIndex, setCurrentSubjectIndex] = useState(null);
   const subjectOptions = ["Chemistry", "Physics", "Mathematics", "Biology"];
 
+  const [newTaskTitle, setNewTaskTitle] = useState("");
+
+  const [newTaskDescription, setNewTaskDescription] = useState("");
+
+  const [newTaskAttachment, setNewTaskAttachment] = useState(null);
+
   return (
     <div className="p-6 lg:p-10 max-w-7xl mx-auto space-y-10">
       {/* Header */}
@@ -104,37 +110,49 @@ export default function TeacherPage() {
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
-                      if (!newTaskText.trim()) return;
+                      if (!newTaskTitle.trim()) return;
                       const newTask = {
                         id: Date.now(),
-                        text: newTaskText,
+                        title: newTaskTitle,
+                        description: newTaskDescription,
+                        attachment: newTaskAttachment,
                         completed: false,
                       };
                       const updatedSubjects = [...subjects];
                       updatedSubjects[index].tasks.push(newTask);
                       setSubjects(updatedSubjects);
-                      setNewTaskText("");
+                      setNewTaskTitle("");
+                      setNewTaskDescription("");
+                      setNewTaskAttachment(null);
                       setCurrentSubjectIndex(null);
                     }}
-                    className="relative group mb-4"
+                    className="space-y-4 mb-4"
                   >
                     <input
                       type="text"
-                      placeholder="Add a new task..."
-                      value={newTaskText}
-                      onChange={(e) => setNewTaskText(e.target.value)}
+                      placeholder="Task Title"
+                      value={newTaskTitle}
+                      onChange={(e) => setNewTaskTitle(e.target.value)}
+                      className="w-full px-5 py-4 bg-surface-container-high/40 border border-outline-variant/30 rounded-2xl focus:ring-4 focus:ring-secondary/10 focus:border-secondary outline-none transition-all duration-300 text-white font-medium placeholder:text-on-surface-variant/40 backdrop-blur-sm"
+                    />
+                    <textarea
+                      placeholder="Task Description"
+                      value={newTaskDescription}
+                      onChange={(e) => setNewTaskDescription(e.target.value)}
+                      className="w-full px-5 py-4 bg-surface-container-high/40 border border-outline-variant/30 rounded-2xl focus:ring-4 focus:ring-secondary/10 focus:border-secondary outline-none transition-all duration-300 text-white font-medium placeholder:text-on-surface-variant/40 backdrop-blur-sm resize-none"
+                      rows="3"
+                    />
+                    <input
+                      type="file"
+                      accept=".pdf"
+                      onChange={(e) => setNewTaskAttachment(e.target.files[0])}
                       className="w-full px-5 py-4 bg-surface-container-high/40 border border-outline-variant/30 rounded-2xl focus:ring-4 focus:ring-secondary/10 focus:border-secondary outline-none transition-all duration-300 text-white font-medium placeholder:text-on-surface-variant/40 backdrop-blur-sm"
                     />
                     <button
                       type="submit"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-xl bg-secondary text-on-secondary flex items-center justify-center shadow-lg shadow-secondary/20 hover:scale-105 transition-transform active:scale-95"
+                      className="w-full px-6 py-3 rounded-xl bg-secondary text-on-secondary font-semibold hover:scale-105 transition-transform"
                     >
-                      <span
-                        className="material-symbols-outlined"
-                        data-icon="add"
-                      >
-                        add
-                      </span>
+                      Add Task
                     </button>
                   </form>
                 )}
@@ -171,15 +189,19 @@ export default function TeacherPage() {
                           </span>
                         )}
                       </div>
-                      <span
-                        className={`flex-grow text-sm font-medium ${
-                          task.completed
-                            ? "line-through text-slate-500"
-                            : "text-on-surface"
+                      <div
+                        className={`flex-grow ${
+                          task.completed ? "line-through text-slate-500" : ""
                         }`}
                       >
-                        {task.text}
-                      </span>
+                        <h5 className="font-semibold text-sm">{task.title}</h5>
+                        <p className="text-xs mt-1">{task.description}</p>
+                        {task.attachment && (
+                          <p className="text-xs mt-1 text-blue-400">
+                            Attachment: {task.attachment.name}
+                          </p>
+                        )}
+                      </div>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
