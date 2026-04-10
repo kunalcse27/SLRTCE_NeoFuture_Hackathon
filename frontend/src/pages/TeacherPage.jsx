@@ -75,11 +75,11 @@ export default function TeacherPage() {
             <select 
               value={selectedSubject}
               onChange={(e) => setSelectedSubject(e.target.value)}
-              className="appearance-none px-6 py-3 pr-12 rounded-full bg-surface-container-highest border border-outline-variant/15 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-secondary/50 transition-all cursor-pointer"
+              className="appearance-none [appearance:none] [-webkit-appearance:none] [-moz-appearance:none] px-6 py-3 pr-12 rounded-full bg-surface-container-highest border border-outline-variant/15 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-secondary/50 transition-all cursor-pointer"
             >
-              {subjects.map(sub => <option key={sub} value={sub}>{sub}</option>)}
+              {subjects.map(sub => <option key={sub} value={sub} className="bg-surface-container-highest">{sub}</option>)}
             </select>
-            <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-lg" data-icon="expand_more">expand_more</span>
+            <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-lg select-none" data-icon="expand_more">expand_more</span>
           </div>
         </div>
       </div>
@@ -162,9 +162,6 @@ export default function TeacherPage() {
                 </h3>
                 <p className="text-xs text-on-surface-variant font-label uppercase tracking-widest leading-none">Class Analytics Overview</p>
               </div>
-              <button className="p-2 rounded-xl bg-surface-container-highest hover:bg-surface-bright transition-colors">
-                <span className="material-symbols-outlined text-slate-400" data-icon="more_vert">more_vert</span>
-              </button>
             </div>
 
             <div className="overflow-x-auto">
