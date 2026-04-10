@@ -34,19 +34,22 @@ export default function BehaviorTrendChart() {
             <div className={`w-full bg-surface-container-highest rounded-t-lg ${data.containerH} relative overflow-hidden`}>
               
               {/* Sentiment Bar */}
-              <div className={`absolute bottom-0 w-full bg-secondary ${data.sentH} hover:${data.sentHover} transition-all duration-500 opacity-80 hover:opacity-100 flex justify-center group/sent z-10`}>
-                 <span className="opacity-0 group-hover/sent:opacity-100 text-[10px] font-bold text-on-secondary-fixed mt-1 transition-opacity duration-300">
-                   {data.sentVal}
-                 </span>
-              </div>
+              {data.sentVal && (
+                <div className={`absolute bottom-0 w-full bg-secondary ${data.sentH} hover:${data.sentHover} transition-all duration-500 opacity-80 hover:opacity-100 flex justify-center group/sent z-10`}>
+                   <span className="opacity-0 group-hover/sent:opacity-100 text-xs font-bold text-on-secondary-fixed mt-1 transition-opacity duration-300">
+                     {data.sentVal}
+                   </span>
+                </div>
+              )}
               
               {/* Performance Bar */}
-              {/* Higher z-index to naturally interact cleanly on hover if it overlays, and uses pointer-events-auto */}
-              <div className={`absolute bottom-0 w-full bg-tertiary ${data.perfH} hover:-translate-y-1 transition-all duration-500 opacity-60 hover:opacity-100 flex justify-center group/perf z-20`}>
-                 <span className="opacity-0 group-hover/perf:opacity-100 text-[10px] font-bold text-on-tertiary-fixed mt-1 transition-opacity duration-300">
-                   {data.perfVal}
-                 </span>
-              </div>
+              {data.perfVal && (
+                <div className={`absolute bottom-0 w-full bg-tertiary ${data.perfH} hover:-translate-y-1 transition-all duration-500 opacity-60 hover:opacity-100 flex justify-center group/perf z-20`}>
+                   <span className="opacity-0 group-hover/perf:opacity-100 text-xs font-bold text-on-tertiary-fixed mt-1 transition-opacity duration-300">
+                     {data.perfVal}
+                   </span>
+                </div>
+              )}
 
             </div>
             <span className="text-[10px] text-slate-500 font-label">{data.day}</span>
