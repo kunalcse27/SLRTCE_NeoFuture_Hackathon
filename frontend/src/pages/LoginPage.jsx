@@ -6,9 +6,19 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
+  // Safe session parser
+  const getSafeSession = () => {
+    try {
+      const stored = localStorage.getItem('alws_session');
+      return stored ? JSON.parse(stored) : {};
+    } catch {
+      return {};
+    }
+  };
+
   // ── Auto-redirect if session already exists ──────────────────────────────
   useEffect(() => {
-    if (localStorage.getItem('alws_session')) {
+    if (localStorage.getItem('alws_session') || sessionStorage.getItem('alws_session')) {
       navigate('/dashboard', { replace: true });
     }
   }, [navigate]);
@@ -31,14 +41,13 @@ export default function LoginPage() {
   const handleAuth = (e) => {
     e.preventDefault();
 
-    // Build the session object to persist
+    // Build the session object to persist securely
+    const existingSession = getSafeSession();
     const session = {
       email,
-      firstName: isLogin ? (JSON.parse(localStorage.getItem('alws_session') || '{}').firstName || '') : firstName,
-      lastName:  isLogin ? (JSON.parse(localStorage.getItem('alws_session') || '{}').lastName  || '') : lastName,
-      courseBranch: isLogin
-        ? (JSON.parse(localStorage.getItem('alws_session') || '{}').courseBranch || '')
-        : courseBranch,
+      firstName: isLogin ? (existingSession.firstName || '') : firstName,
+      lastName:  isLogin ? (existingSession.lastName  || '') : lastName,
+      courseBranch: isLogin ? (existingSession.courseBranch || '') : courseBranch,
       loggedInAt: new Date().toISOString(),
     };
 
