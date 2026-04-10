@@ -161,68 +161,11 @@ export default function ProfilePage() {
               </div>
             </motion.div>
           </div>
-
-          {/* Form Sections */}
-          <div className="col-span-12 lg:col-span-8 space-y-8">
-            <motion.div layout className="glass-panel p-10 rounded-[3.5rem] border border-white/5 bg-[#1a1a1a]/60 space-y-12">
-              
-              {/* Account Credentials */}
-              <section className="space-y-6">
-                 <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#FF5722] flex items-center gap-3">
-                    <span className="material-symbols-outlined text-sm" data-icon="key">key</span>
-                    Account Credentials
-                 </h3>
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Field label="Login Username" name="username" value={profile.username} isEditing={isEditing} onChange={handleChange} icon="alternate_email" />
-                    <Field label="Login Password" name="password" type="text" value={profile.password} isEditing={isEditing} onChange={handleChange} icon="lock_open" />
-                 </div>
-                 <p className="text-[10px] text-slate-500 italic ml-2">These are your primary login credentials used for site access.</p>
-              </section>
-
-              {/* Personal Information */}
-              <section className="space-y-6 pt-6 border-t border-white/5">
-                 <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#1DB954] flex items-center gap-3">
-                    <span className="material-symbols-outlined text-sm" data-icon="person_search">person_search</span>
-                    Personal Information
-                 </h3>
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Field label="First Name" name="firstName" value={profile.firstName} isEditing={isEditing} onChange={handleChange} />
-                    <Field label="Last Name" name="lastName" value={profile.lastName} isEditing={isEditing} onChange={handleChange} />
-                    <Field label="Email Address" name="email" type="email" value={profile.email} isEditing={isEditing} onChange={handleChange} icon="mail" />
-                    <Field label="Phone Number" name="phone" type="tel" value={profile.phone} isEditing={isEditing} onChange={handleChange} icon="call" placeholder="+91 0000000000" />
-                 </div>
-              </section>
-
-              {/* Academic Details */}
-              <section className="space-y-6 pt-6 border-t border-white/5">
-                 <h3 className="text-xs font-black uppercase tracking-[0.3em] text-teal-400 flex items-center gap-3">
-                    <span className="material-symbols-outlined text-sm" data-icon="school">school</span>
-                    Academic Record
-                 </h3>
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="grid grid-cols-2 gap-4">
-                       <Field label="Roll Number" name="rollNo" value={profile.rollNo} isEditing={isEditing} onChange={handleChange} />
-                       <Field label="Class" name="className" value={profile.className} isEditing={isEditing} onChange={handleChange} />
-                    </div>
-                    <Field label="Engineering Branch" name="branch" value={profile.branch} isEditing={isEditing} onChange={handleChange} icon="account_tree" />
-                 </div>
-              </section>
-
-              {/* Emergency Contacts */}
-              <section className="space-y-6 pt-6 border-t border-white/5">
-                 <h3 className="text-xs font-black uppercase tracking-[0.3em] text-slate-400 flex items-center gap-3">
-                    <span className="material-symbols-outlined text-sm" data-icon="family_history">family_history</span>
-                    Parental Information
-                 </h3>
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Field label="Guardian Name" name="parentName" value={profile.parentName} isEditing={isEditing} onChange={handleChange} icon="diversity_3" />
-                    <Field label="Guardian Phone" name="parentPhone" type="tel" value={profile.parentPhone} isEditing={isEditing} onChange={handleChange} icon="contact_emergency" />
-                 </div>
-              </section>
-
-            </motion.div>
-          </div>
-        </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+}
       </div>
     </div>
   );
