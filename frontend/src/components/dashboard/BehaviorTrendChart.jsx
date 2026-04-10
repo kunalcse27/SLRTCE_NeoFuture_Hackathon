@@ -15,7 +15,7 @@ export default function BehaviorTrendChart() {
       <div className="flex justify-between items-center mb-10">
         <div>
           <h3 className="text-2xl font-bold font-headline">Behavioral Baseline</h3>
-          <p className="text-sm text-on-surface-variant font-label">Sentiment Analysis vs. Quiz Performance (Last 7 Days)</p>
+          <p className="text-sm text-on-surface-variant font-label">Sentiment v/s Study Performance (Last 7 Days)</p>
         </div>
         <div className="flex gap-4">
           <div className="flex items-center gap-2">
@@ -24,7 +24,7 @@ export default function BehaviorTrendChart() {
           </div>
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-tertiary"></span>
-            <span className="text-xs text-on-surface-variant font-label">Performance</span>
+            <span className="text-xs text-on-surface-variant font-label">Study Performance</span>
           </div>
         </div>
       </div>
