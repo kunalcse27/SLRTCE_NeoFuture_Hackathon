@@ -35,8 +35,6 @@ export default function Header() {
             Overview
             <motion.div layoutId="activeNav" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#1DB954]" />
           </a>
-          <a className="text-slate-400 hover:text-white transition-colors" href="#">Insights</a>
-          <a className="text-slate-400 hover:text-white transition-colors" href="#">History</a>
         </nav>
       </div>
 

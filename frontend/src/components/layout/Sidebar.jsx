@@ -6,7 +6,6 @@ export default function Sidebar() {
     { name: 'Dashboard', icon: 'dashboard', path: '/dashboard' },
     { name: 'Teacher', icon: 'school', path: '/dashboard/teacher' },
     { name: 'Progress', icon: 'trending_up', path: '/dashboard/progress' },
-    { name: 'Insights', icon: 'lightbulb', path: '/dashboard/insights' },
     { name: 'Resources', icon: 'auto_stories', path: '/dashboard/resources' },
     { name: 'Profile', icon: 'person', path: '/dashboard/profile' },
   ];
