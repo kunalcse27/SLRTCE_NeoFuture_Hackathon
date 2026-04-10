@@ -5,8 +5,8 @@ export default function Sidebar() {
   const navItems = [
     { name: 'Dashboard', icon: 'dashboard', path: '/dashboard' },
     { name: 'Teacher', icon: 'school', path: '/dashboard/teacher' },
-    { name: 'Progress', icon: 'trending_up', path: '/dashboard/progress' },
-    { name: 'Resources', icon: 'auto_stories', path: '/dashboard/resources' },
+    { name: 'Insights', icon: 'lightbulb', path: '/dashboard/insights' },
+    { name: 'Notices', icon: 'campaign', path: '/dashboard/notices' },
     { name: 'Profile', icon: 'person', path: '/dashboard/profile' },
   ];
 
