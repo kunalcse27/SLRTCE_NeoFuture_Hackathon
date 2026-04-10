@@ -1,4 +1,13 @@
-export default function LoginPage({ onLogin }) {
+import { useNavigate } from 'react-router-dom';
+
+export default function LoginPage() {
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    navigate('/dashboard');
+  };
+
   return (
     <div className="min-h-screen bg-surface flex flex-col items-center justify-center relative overflow-hidden font-body selection:bg-secondary/30">
       {/* Background decorations */}
@@ -14,7 +23,7 @@ export default function LoginPage({ onLogin }) {
           <p className="text-xs text-slate-500 uppercase tracking-widest font-bold mt-1">Adaptive System</p>
         </div>
 
-        <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); onLogin(); }}>
+        <form className="space-y-6" onSubmit={handleLogin}>
           <div className="space-y-2">
             <label className="text-sm font-bold text-on-surface-variant font-label block" htmlFor="email">Email</label>
             <div className="relative flex items-center bg-slate-800/30 rounded-xl px-4 py-3 border border-outline-variant/10 focus-within:border-secondary/50 transition-colors">

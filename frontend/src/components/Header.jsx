@@ -1,4 +1,12 @@
-export default function Header({ onLogout }) {
+import { useNavigate } from 'react-router-dom';
+
+export default function Header() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    navigate('/login');
+  };
+
   return (
     <header className="fixed top-0 left-64 right-0 z-40 bg-slate-900/60 backdrop-blur-xl shadow-xl shadow-slate-950/20 px-8 py-4 flex justify-between items-center font-manrope tracking-tight font-medium">
       <div className="flex items-center gap-8">
@@ -30,7 +38,7 @@ export default function Header({ onLogout }) {
           <img alt="Aarav's Profile Picture" className="w-10 h-10 rounded-full border-2 border-teal-400/30 object-cover" data-alt="Close-up portrait of a young man with a friendly expression and stylish hair, soft studio lighting on dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0jiaA2y45kfdGoqYex1KFBHcL9DDQonEER0BYpVIaKAdt_XP5i8OI8ow_kaCEXbNP1DhyKb6DIlzhhYZZlEhScTXOPz0V1w9aXsvmLz96WgJEw0w1G8E66Wpi4_uQyXC1AtE-i4_yJS65Dymtzu8VRqEgIQy04XnlVxwqQ-5JGKjba69in-uOjPZBVFdaYVmEoFxfFZdXoBY6y06SA7aO5HLtJuYIHtNyDrqHIu-HRjWDI_zgPW2z_pM7evoQWsmdkoaToU8o0mY"/>
           
           {/* Logout Action */}
-          <button onClick={onLogout} className="ml-2 bg-error-container/20 text-error hover:bg-error-container hover:text-on-error-container p-2 rounded-full transition-colors flex items-center justify-center active:scale-95" title="Log Out">
+          <button onClick={handleLogout} className="ml-2 bg-error-container/20 text-error hover:bg-error-container hover:text-on-error-container p-2 rounded-full transition-colors flex items-center justify-center active:scale-95" title="Log Out">
             <span className="material-symbols-outlined text-sm" data-icon="logout">logout</span>
           </button>
         </div>
