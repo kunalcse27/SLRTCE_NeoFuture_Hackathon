@@ -2,32 +2,18 @@
  * Wellbeing Service
  * 
  * High-level functions to interact with the wellbeing backend.
- * Features: Sentiment analysis, risk detection, and trend tracking.
+ * Features: Sentiment analysis, AI Chat support, and trend tracking.
  */
 const wellbeingService = {
   /**
    * Submit student text/journal entry for analysis
-   * @returns {Promise} - Analysis result (sentiment, entities, risk level)
+   * @param {string} text - The raw text from the student
+   * @returns {Promise} - Analysis result (sentiment, stress level, recommendation)
    */
-  analyzeText: async () => {
+  performSentimentAnalysis: async (text) => {
     try {
-      // Mock response for demo/development
-      // Replace with actual API call: const response = await api.post('/analyze', { text });
-      
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          const mockSentiment = Math.random() > 0.5 ? 'positive' : 'negative';
-          const mockScore = Math.random();
-          resolve({
-            data: {
-              sentiment: mockSentiment,
-              score: mockScore,
-              alertTriggered: mockScore < 0.3,
-              timestamp: new Date().toISOString()
-            }
-          });
-        }, 1000);
-      });
+      const response = await api.post('/wellbeing/analyze', { text });
+      return response.data;
     } catch (error) {
       console.error('Error analyzing text:', error);
       throw error;
@@ -35,28 +21,44 @@ const wellbeingService = {
   },
 
   /**
-   * Fetch current wellbeing alerts
-   * @returns {Promise} - List of alerts for at-risk students
+   * Get AI response from Mira
+   * @param {Array} messages - Chat history
+   * @param {string} mood - Current user mood context
    */
-  getAlerts: async () => {
+  getMiraChatResponse: async (messages, mood) => {
     try {
-      // Actual implementation: const response = await api.get('/alerts'); return response.data;
-      return [
-        { id: 1, student: 'Aarav', risk: 'High', type: 'Focus Shift', time: '2h ago' },
-        { id: 2, student: 'Meera', risk: 'Medium', type: 'Mood Drop', time: '5h ago' }
-      ];
+      const response = await api.post('/wellbeing/chat', { messages, mood });
+      return response.data;
     } catch (error) {
-      console.error('Error fetching alerts:', error);
-      return [];
+      console.error('Error chatting with Mira:', error);
+      throw error;
     }
   },
 
   /**
-   * Get behavior trend data for charts
+   * Fetch current wellbeing statistics
    */
-  getTrends: async () => {
-    // Implement API call for trend data
-    return [];
+  getStats: async () => {
+    try {
+      const response = await api.get('/wellbeing/stats');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+      return null;
+    }
+  },
+
+  /**
+   * Submit a journal entry
+   */
+  submitJournal: async (text) => {
+    try {
+      const response = await api.post('/wellbeing/journal', { text });
+      return response.data;
+    } catch (error) {
+      console.error('Error submitting journal:', error);
+      throw error;
+    }
   }
 };
 

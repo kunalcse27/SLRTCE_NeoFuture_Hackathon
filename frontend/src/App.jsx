@@ -22,7 +22,8 @@ import DashboardLayout from "./components/layout/DashboardLayout";
 function RequireAuth() {
   const session =
     localStorage.getItem("alws_session") ||
-    sessionStorage.getItem("alws_session");
+    sessionStorage.getItem("alws_session") ||
+    localStorage.getItem("token");
   if (!session) return <Navigate to="/login" replace />;
   return <Outlet />;
 }
@@ -31,7 +32,8 @@ function RequireAuth() {
 function RootRedirect() {
   const session =
     localStorage.getItem("alws_session") ||
-    sessionStorage.getItem("alws_session");
+    sessionStorage.getItem("alws_session") ||
+    localStorage.getItem("token");
   return <Navigate to={session ? "/dashboard" : "/login"} replace />;
 }
 
