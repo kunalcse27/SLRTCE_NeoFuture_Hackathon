@@ -2,6 +2,8 @@
 
 Adaptive Learning & Wellbeing System (ALWS) is a unified platform designed to track cognitive performance, emotional stability, and behavioral trends to provide actionable mental health insights.
 
+DEMO LINK: 👉 https://drive.google.com/file/d/1RH6X8M518sjAmHYoo1WOlEf_MR4A3whv/view?usp=drivesdk
+
 ## Project Structure
 
 ### 🖥️ Frontend (React + Vite)
