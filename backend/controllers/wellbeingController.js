@@ -17,7 +17,7 @@ const sentimentAnalyzer = new Sentiment();
 export const chatWithMira = async (req, res) => {
   try {
     const { messages, mood } = req.body;
-    
+
     if (!messages || !Array.isArray(messages)) {
       return res.status(400).json({ success: false, message: "Invalid messages format" });
     }
@@ -33,9 +33,9 @@ Your Goal:
 - Keep responses concise but meaningful (3-5 sentences).
 - Focus on active listening and validating feelings.`;
 
-    const model = genAI.getGenerativeModel({ 
+    const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
-      systemInstruction: systemPrompt 
+      systemInstruction: systemPrompt
     });
 
     const chat = model.startChat({
@@ -51,11 +51,11 @@ Your Goal:
 
     const lastMessage = messages[messages.length - 1].content;
     console.log("Sending to Gemini:", lastMessage);
-    
+
     const result = await chat.sendMessage(lastMessage);
     const response = await result.response;
     const text = response.text();
-    
+
     console.log("Mira Response:", text);
 
     res.status(200).json({
@@ -66,10 +66,10 @@ Your Goal:
     });
   } catch (error) {
     console.error("Gemini Error:", error);
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       message: "I'm having a bit of trouble thinking right now. Let's try again in a moment. 💙",
-      error: error.message 
+      error: error.message
     });
   }
 };
@@ -80,36 +80,42 @@ export const analyzeSentiment = async (req, res) => {
     const { text } = req.body;
     if (!text) return res.status(400).json({ success: false, message: "No text provided" });
 
-    const analysis = sentimentAnalyzer.analyze(text);
-    
-    // Convert sentiment score to a 1-10 stress scale
-    // sentiment score: positive is happy, negative is stressed
-    // Analysis score usually ranges from -5 to +5 per word.
-    // Let's normalize it.
-    const score = analysis.score;
-    let stressLevel = 5; // Start at middle (Neutral)
+    const input = text.toLowerCase();
+    let stressLevel = 5;
 
-    if (score > 0) {
-      stressLevel = Math.max(1, 5 - Math.floor(score / 2)); // Positive sentiment = Lower stress
-    } else if (score < 0) {
-      stressLevel = Math.min(10, 5 + Math.abs(Math.floor(score / 2))); // Negative sentiment = Higher stress
+    if (input.includes("stress") || input.includes("anxious") || input.includes("overwhelmed")) {
+      stressLevel = 8;
+    } else if (input.includes("exam") || input.includes("study") || input.includes("pressure")) {
+      stressLevel = 9;
+    } else if (input.includes("tired") || input.includes("exhausted") || input.includes("sleep")) {
+      stressLevel = 7;
+    } else if (input.includes("sad") || input.includes("low") || input.includes("depressed")) {
+      stressLevel = 6;
+    } else if (input.includes("happy") || input.includes("good") || input.includes("great")) {
+      stressLevel = 2;
     }
 
-    // Recommendation based on stress
-    let recommendation = "You're doing great! Keep up the positive vibes.";
+    let recommendation = "";
     if (stressLevel >= 8) {
-      recommendation = "It looks like you're carrying a lot right now. Remember to take deep breaths and maybe talk to a friend or mentor.";
+      recommendation = "You seem highly stressed. Try taking a break and managing tasks step by step.";
     } else if (stressLevel >= 6) {
-      recommendation = "You seem a bit tense. How about a 5-minute break to clear your head?";
+      recommendation = "You might be feeling overwhelmed. Take short breaks and rest.";
+    } else if (stressLevel >= 3) {
+      recommendation = "You're doing okay. Maintain a balanced routine.";
+    } else {
+      recommendation = "Great! You seem relaxed and positive.";
     }
 
+    // Wrap directly identically back into the same schema the frontend is hitting
+    // InsightsPage.jsx maps via `data.stressLevel` but the reverted routing
+    // might expect data wrapper. Keep backward and frontend compat.
     res.status(200).json({
+      stressLevel,
+      recommendation,
       success: true,
       data: {
-        stressLevel,
-        sentiment: score > 0 ? "Positive" : score < 0 ? "Negative" : "Neutral",
-        recommendation,
-        comparative: analysis.comparative
+          stressLevel,
+          recommendation
       }
     });
   } catch (error) {

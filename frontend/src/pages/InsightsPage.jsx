@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import wellbeingService from '../services/wellbeingService';
 
 // ── Chatbot powered by Gemini (via Backend) ──────────────────────────────────
-function Chatbot({ mood, onClose }) {
+function Chatbot({ mood, subjectsData = [], onClose }) {
    const [messages, setMessages] = useState([
       {
          role: 'assistant',
@@ -28,8 +28,63 @@ function Chatbot({ mood, onClose }) {
       setLoading(true);
 
       try {
-         const data = await wellbeingService.getMiraChatResponse(newMessages, mood);
-         const reply = data.data?.reply || "I'm here for you. Could you tell me more?";
+         // const data = await wellbeingService.getMiraChatResponse(newMessages, mood);
+         // const reply = data.data?.reply || "I'm here for you. Could you tell me more?";
+         await new Promise(resolve => setTimeout(resolve, 800));
+
+         const lc = text.toLowerCase();
+         let reply = "I'm here to support you. Tell me more about what you're going through.";
+
+         const check = (words) => words.some(w => lc.includes(w));
+
+         let matchedSubject = null;
+         if (subjectsData) {
+             for (const sub of subjectsData) {
+                 if (lc.includes(sub.name.toLowerCase())) {
+                     matchedSubject = sub;
+                     break;
+                 }
+             }
+         }
+
+         const stressWords = ["stress", "anxious", "overwhelmed", "pressure"];
+         const examWords = ["exam", "test", "deadline", "study"];
+         const tiredWords = ["tired", "exhausted", "burnout", "sleepy"];
+         const motivationWords = ["lazy", "no motivation", "procrastinating", "can't study"];
+         const confidenceWords = ["can't do", "not good", "fail", "doubt"];
+         const positiveWords = ["happy", "good", "great", "productive"];
+
+         const isStressOrExam = check([...stressWords, ...examWords]);
+
+         if (matchedSubject) {
+             const prog = matchedSubject.progress;
+             if (isStressOrExam) {
+                 reply = `You seem stressed about ${matchedSubject.name}. Your progress is ${prog}%. Focus on small topics and take breaks.`;
+             } else {
+                 if (prog < 25) {
+                     reply = `You seem to be struggling with ${matchedSubject.name}. Your progress is ${prog}%. Start with basics and build consistency.`;
+                 } else if (prog >= 25 && prog <= 60) {
+                     reply = `You're improving in ${matchedSubject.name} (${prog}%). Stay consistent and revise regularly.`;
+                 } else {
+                     reply = `You're doing great in ${matchedSubject.name} (${prog}%). Keep pushing forward!`;
+                 }
+             }
+         } else if (check(stressWords)) {
+             reply = "It seems like you're feeling overwhelmed. Take a short break and try to focus on one task at a time.";
+         } else if (check(tiredWords)) {
+             reply = "You might be mentally exhausted. Proper rest and small breaks can really help.";
+         } else if (check(examWords)) {
+             reply = "Exams can feel stressful. Try breaking your syllabus into small achievable goals.";
+         } else if (check(motivationWords)) {
+             reply = "It's okay to feel unmotivated sometimes. Start with just 10 minutes of focused work.";
+         } else if (check(confidenceWords)) {
+             reply = "You're capable of improving. Focus on progress, not perfection.";
+         } else if (check(positiveWords)) {
+             reply = "That's amazing! Keep maintaining this positive momentum.";
+         } else if (subjectsData && subjectsData.length > 0 && subjectsData.every(s => s.progress === 0)) {
+             reply = "You haven’t started your subjects yet. Begin with one small topic today.";
+         }
+
          setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
       } catch {
          setMessages(prev => [...prev, { role: 'assistant', content: "I'm having a little trouble connecting right now, but I'm still here for you. 💙" }]);
@@ -138,7 +193,46 @@ export default function InsightsPage() {
    const [mood, setMood] = useState('Neutral');
    const [chatOpen, setChatOpen] = useState(false);
    const [chatPulse, setChatPulse] = useState(true);
-   
+
+   const [subjectsWithProgress, setSubjectsWithProgress] = useState([]);
+
+   useEffect(() => {
+       const loadDashboardData = async () => {
+           try {
+               const token = localStorage.getItem('token');
+               if (!token) return;
+               
+               const [subjectsRes, tasksRes] = await Promise.all([
+                   fetch('http://localhost:3000/api/subjects', { headers: { 'Authorization': `Bearer ${token}` } }),
+                   fetch('http://localhost:3000/api/tasks', { headers: { 'Authorization': `Bearer ${token}` } })
+               ]);
+               
+               let subjects = [];
+               let tasks = [];
+
+               if (subjectsRes.ok) subjects = await subjectsRes.json();
+               if (tasksRes.ok) tasks = await tasksRes.json();
+
+               const storedUser = localStorage.getItem('user') || localStorage.getItem('alws_session');
+               const user = storedUser ? JSON.parse(storedUser) : null;
+               const userId = user?._id || user?.id || 'unknown';
+
+               const computed = subjects.map(sub => {
+                   const completedMap = JSON.parse(localStorage.getItem(`completedTasks_${userId}_${sub._id}`) || '[]');
+                   const subTasks = tasks.filter(t => t.subject === sub._id);
+                   const validCompleted = completedMap.filter(id => subTasks.some(t => t._id === id));
+                   const progress = subTasks.length === 0 ? 0 : Math.round((validCompleted.length / subTasks.length) * 100);
+                   return { ...sub, progress };
+               });
+               
+               setSubjectsWithProgress(computed);
+           } catch (err) {
+               console.error("Network error fetching dashboard data:", err);
+           }
+       };
+       loadDashboardData();
+   }, []);
+
    // Sentiment detection states
    const [userInput, setUserInput] = useState('');
    const [analysisLoading, setAnalysisLoading] = useState(false);
@@ -186,12 +280,32 @@ export default function InsightsPage() {
       if (!userInput.trim() || analysisLoading) return;
       setAnalysisLoading(true);
       try {
-         const data = await wellbeingService.performSentimentAnalysis(userInput);
-         const { stressLevel, sentiment, recommendation } = data.data;
+         // const data = await wellbeingService.performSentimentAnalysis(userInput);
+         // const { stressLevel, sentiment, recommendation } = data.data;
+
+         await new Promise(resolve => setTimeout(resolve, 1000));
          
+         const text = userInput.toLowerCase();
+         let stressLevel = 5;
+         let recommendation = "Everything seems to be balanced.";
+
+         if (text.includes('stress') || text.includes('anxious') || text.includes('overwhelm')) {
+             stressLevel = 8;
+             recommendation = "Try taking a short break and some breathing exercises.";
+         } else if (text.includes('tired') || text.includes('exhaust') || text.includes('sleepy')) {
+             stressLevel = 7;
+             recommendation = "You seem exhausted. Prioritize getting some mental rest.";
+         } else if (text.includes('happy') || text.includes('good') || text.includes('great') || text.includes('excit')) {
+             stressLevel = 2;
+             recommendation = "You're in a positive mindset! Keep up the great energy.";
+         } else if (text.includes('sad') || text.includes('bad') || text.includes('down')) {
+             stressLevel = 8;
+             recommendation = "I'm sorry you are feeling down. Be kind to yourself today.";
+         }
+
          setStressScore(stressLevel);
          setRecommendation(recommendation);
-         
+
          // Update broad mood category
          if (stressLevel >= 7) setMood('Stressed');
          else if (stressLevel <= 3) setMood('Happy');
@@ -333,7 +447,7 @@ export default function InsightsPage() {
                      </h2>
                      <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest bg-white/[0.03] px-3 py-1 rounded-full border border-white/5">Mental Momentum</span>
                   </div>
-                  
+
                   <div className="flex justify-between items-end flex-grow gap-2 px-1 pb-4">
                      {trend.map((day, i) => (
                         <motion.div
@@ -520,7 +634,7 @@ export default function InsightsPage() {
                      className="material-symbols-outlined text-white text-3xl leading-none">forum</motion.span>
                )}
             </AnimatePresence>
-            
+
             {chatPulse && !chatOpen && (
                <motion.span
                   className="absolute inset-0 rounded-[2rem]"
@@ -533,7 +647,7 @@ export default function InsightsPage() {
 
          {/* ── Chat Overlay ── */}
          <AnimatePresence>
-            {chatOpen && <Chatbot mood={mood} onClose={() => setChatOpen(false)} />}
+            {chatOpen && <Chatbot mood={mood} subjectsData={subjectsWithProgress} onClose={() => setChatOpen(false)} />}
          </AnimatePresence>
       </div>
    );

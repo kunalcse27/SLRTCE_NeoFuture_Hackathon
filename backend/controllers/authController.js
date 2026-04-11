@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 export const registerUser = async (req, res) => {
   try {
-    const { firstName, lastName, email, password, courseBranch } = req.body;
+    const { firstName, lastName, email, password, courseBranch, role } = req.body;
 
     const userExists = await User.findOne({ email });
 
@@ -16,7 +16,8 @@ export const registerUser = async (req, res) => {
       lastName,
       email,
       password,
-      courseBranch
+      courseBranch,
+      role: role || "student"
     });
 
     await user.save();

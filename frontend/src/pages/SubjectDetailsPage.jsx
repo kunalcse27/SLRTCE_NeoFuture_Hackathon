@@ -1,22 +1,71 @@
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 export default function SubjectDetailsPage() {
-    const { subjectName } = useParams();
+    const params = useParams();
+    const subjectId = params.subjectId || params.subjectName; 
     const navigate = useNavigate();
     
-    // Decode subject name in case it has spaces
-    const title = decodeURIComponent(subjectName || 'Subject');
+    const storedUser = localStorage.getItem('user') || localStorage.getItem('alws_session');
+    const user = storedUser ? JSON.parse(storedUser) : null;
+    const userId = user?._id || user?.id || 'unknown';
 
-    // Mock data for progress and tasks
-    const progress = 65;
+    const [tasks, setTasks] = useState([]);
+    const [subjectTitle, setSubjectTitle] = useState('Workspace');
     
-    const tasks = [
-        { id: 1, title: 'Introduction to Core Concepts', type: 'video', date: 'Feb 2, 2024', status: 'Completed', teacher: 'Dr. Smith' },
-        { id: 2, title: 'Primary Source Reading', type: 'pdf', date: 'Feb 15, 2024', status: 'Pending', teacher: 'Prof. Johnson' },
-        { id: 3, title: 'Advanced Theory Quiz', type: 'quiz', date: 'March 1, 2024', status: 'Not Understood', teacher: 'Dr. Smith' },
-        { id: 4, title: 'Final Project Guidelines', type: 'pdf', date: 'March 20, 2024', status: 'Pending', teacher: 'Dr. Smith' },
-    ];
+    useEffect(() => {
+        const fetchTasks = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token || !subjectId) return;
+                
+                const response = await fetch(`http://localhost:3000/api/tasks?subjectId=${subjectId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setTasks(data);
+                } else {
+                    console.error("Failed to fetch tasks");
+                }
+                
+                const subRes = await fetch('http://localhost:3000/api/subjects', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (subRes.ok) {
+                    const subs = await subRes.json();
+                    const targetSub = subs.find(s => s._id === subjectId);
+                    if (targetSub) setSubjectTitle(targetSub.name);
+                }
+            } catch (err) {
+                console.error("Network error fetching tasks:", err);
+            }
+        };
+        fetchTasks();
+
+        const storedCompleted = JSON.parse(localStorage.getItem(`completedTasks_${userId}_${subjectId}`) || '[]');
+        setCompletedTasks(storedCompleted);
+    }, [subjectId, userId]);
+
+    const [completedTasks, setCompletedTasks] = useState([]);
+    
+    const toggleTask = (taskId, status) => {
+        let newCompleted;
+        if (status === 'completed') {
+            if (!completedTasks.includes(taskId)) {
+                newCompleted = [...completedTasks, taskId];
+            } else {
+                return;
+            }
+        } else {
+            newCompleted = completedTasks.filter(id => id !== taskId);
+        }
+        setCompletedTasks(newCompleted);
+        localStorage.setItem(`completedTasks_${userId}_${subjectId}`, JSON.stringify(newCompleted));
+    };
+
+    const progress = tasks.length === 0 ? 0 : Math.round((completedTasks.length / tasks.length) * 100);
 
     return (
         <div className="p-8 text-[#EAEAEA] min-h-screen font-manrope">
@@ -31,7 +80,7 @@ export default function SubjectDetailsPage() {
                     <span className="material-symbols-outlined">arrow_back</span>
                 </motion.button>
                 <div>
-                    <h1 className="text-4xl font-extrabold tracking-tight text-white">{title}</h1>
+                    <h1 className="text-4xl font-extrabold tracking-tight text-white">{subjectTitle}</h1>
                     <p className="text-slate-400 font-medium mt-1">Detailed subject overview and assigned tasks</p>
                 </div>
             </div>
@@ -71,84 +120,81 @@ export default function SubjectDetailsPage() {
                     </h2>
                     
                     <div className="space-y-4">
-                        {tasks.map((task) => (
-                            <motion.div 
-                                key={task.id}
-                                whileHover={{ x: 5 }}
-                                className="bg-[#1a1a1a] border border-white/5 p-6 rounded-2xl shadow-lg shadow-black/20 flex flex-col md:flex-row md:items-center justify-between gap-6 group hover:border-white/10 transition-colors"
-                            >
-                                <div className="flex items-start gap-4 flex-grow">
-                                    <div className={`p-3 rounded-xl mt-1 ${
-                                        task.status === 'Completed' ? 'bg-[#1DB954]/10 text-[#1DB954]' : 
-                                        task.status === 'Not Understood' ? 'bg-red-500/10 text-red-500' : 
-                                        'bg-yellow-500/10 text-yellow-500'
-                                    }`}>
-                                        <span className="material-symbols-outlined">
-                                            {task.status === 'Completed' ? 'check_circle' : 
-                                             task.status === 'Not Understood' ? 'cancel' : 'pending_actions'}
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <span className="material-symbols-outlined text-[#1DB954] bg-[#1DB954]/10 p-1 rounded text-sm">
-                                                {task.type === 'video' ? 'play_circle' : task.type === 'quiz' ? 'quiz' : 'picture_as_pdf'}
-                                            </span>
-                                            <h3 className="text-xl font-bold text-white group-hover:text-[#1DB954] transition-colors cursor-pointer" onClick={() => navigate(`/dashboard/task/${task.id}?type=${task.type}&title=${encodeURIComponent(task.title)}`)}>{task.title}</h3>
+                        {tasks.map((task) => {
+                            const isCompleted = completedTasks.includes(task._id);
+                            return (
+                                <motion.div 
+                                    key={task._id}
+                                    whileHover={{ x: 5 }}
+                                    className={`bg-[#1a1a1a] border p-6 rounded-2xl shadow-lg shadow-black/20 flex flex-col md:flex-row md:items-center justify-between gap-6 group transition-colors ${isCompleted ? 'border-[#1DB954]/30 bg-[#1DB954]/5' : 'border-white/5 hover:border-white/10'}`}
+                                >
+                                    <div className="flex items-start gap-4 flex-grow">
+                                        <div className={`p-3 rounded-xl mt-1 ${isCompleted ? 'bg-[#1DB954]/10 text-[#1DB954]' : 'bg-yellow-500/10 text-yellow-500'}`}>
+                                            <span className="material-symbols-outlined">{isCompleted ? 'check_circle' : 'pending_actions'}</span>
                                         </div>
-                                        <div className="flex flex-wrap items-center gap-4 text-sm font-semibold text-slate-400 mt-2">
-                                            <span className="flex items-center gap-1.5 opacity-80">
-                                                <span className="material-symbols-outlined text-[16px]">calendar_month</span> {task.date}
-                                            </span>
-                                            <span className="w-1 h-1 rounded-full bg-slate-600"></span>
-                                            <span className="flex items-center gap-1.5 opacity-80">
-                                                <span className="material-symbols-outlined text-[16px]">person</span> {task.teacher}
-                                            </span>
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <span className={`material-symbols-outlined p-1 rounded text-sm ${isCompleted ? 'text-[#1DB954] bg-[#1DB954]/10' : 'text-[#1DB954] bg-[#1DB954]/10'}`}>
+                                                    article
+                                                </span>
+                                                <h3 className={`text-xl font-bold group-hover:text-[#1DB954] transition-colors ${isCompleted ? 'text-slate-300' : 'text-white'}`}>
+                                                    {task.title}
+                                                </h3>
+                                            </div>
+                                            <div className="flex flex-wrap items-center gap-4 text-sm font-medium text-slate-400 mt-2">
+                                                {task.description && (
+                                                    <p className="opacity-80">{task.description}</p>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                
-                                <div className="flex items-center gap-3">
-                                    <motion.button 
-                                        onClick={() => navigate(`/dashboard/task/${task.id}?type=${task.type}&title=${encodeURIComponent(task.title)}`)}
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                        className="px-4 py-2 rounded-xl bg-[#1DB954] hover:brightness-110 text-[#121212] flex items-center gap-2 font-bold transition-all shadow-lg shadow-[#1DB954]/20 mr-2"
-                                    >
-                                        <span className="material-symbols-outlined text-sm">open_in_new</span>
-                                        Open
-                                    </motion.button>
                                     
-                                    <span className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider border hidden md:block ${
-                                        task.status === 'Completed' ? 'bg-[#1DB954]/10 text-[#1DB954] border-[#1DB954]/20' : 
-                                        task.status === 'Not Understood' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 
-                                        'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
-                                    }`}>
-                                        {task.status}
-                                    </span>
-                                    
-                                    {/* Action Buttons */}
-                                    <div className="flex items-center gap-2 border-l border-white/10 pl-3">
-                                        <motion.button 
-                                            whileHover={{ scale: 1.1 }}
-                                            whileTap={{ scale: 0.9 }}
-                                            title="Mark as understood"
-                                            className="w-8 h-8 rounded-full border border-[#1DB954]/30 hover:bg-[#1DB954] hover:text-[#121212] text-[#1DB954] flex items-center justify-center transition-all shadow-lg hover:shadow-[#1DB954]/20 cursor-pointer"
-                                        >
-                                            <span className="material-symbols-outlined text-[18px] font-bold">check</span>
-                                        </motion.button>
+                                    <div className="flex items-center gap-3">
+                                        {task.fileUrl && (
+                                          <motion.a 
+                                              href={task.fileUrl} target="_blank" rel="noreferrer"
+                                              whileHover={{ scale: 1.05 }}
+                                              whileTap={{ scale: 0.95 }}
+                                              className={`px-4 py-2 rounded-xl flex items-center gap-2 font-bold transition-all shadow-lg mr-2 ${isCompleted ? 'bg-[#1DB954]/20 text-[#1DB954] border border-[#1DB954]/30' : 'bg-[#1DB954] hover:brightness-110 text-[#121212] shadow-[#1DB954]/20'}`}
+                                          >
+                                              <span className="material-symbols-outlined text-sm">link</span>
+                                              File
+                                          </motion.a>
+                                        )}
                                         
-                                        <motion.button 
-                                            whileHover={{ scale: 1.1 }}
-                                            whileTap={{ scale: 0.9 }}
-                                            title="Did not understand"
-                                            className="w-8 h-8 rounded-full border border-red-500/30 hover:bg-red-500 hover:text-white text-red-500 flex items-center justify-center transition-all shadow-lg hover:shadow-red-500/20 cursor-pointer"
-                                        >
-                                            <span className="material-symbols-outlined text-[18px] font-bold">close</span>
-                                        </motion.button>
+                                        <span className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider border hidden md:block ${isCompleted ? 'bg-[#1DB954]/10 text-[#1DB954] border-[#1DB954]/20' : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'}`}>
+                                            {isCompleted ? 'Understood' : 'Pending'}
+                                        </span>
+                                        
+                                        {/* Action Buttons */}
+                                        <div className="flex items-center gap-2 border-l border-white/10 pl-3">
+                                            <motion.button 
+                                                onClick={() => toggleTask(task._id, 'completed')}
+                                                whileHover={{ scale: 1.1 }}
+                                                whileTap={{ scale: 0.9 }}
+                                                title="Mark as understood"
+                                                className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all shadow-lg cursor-pointer ${isCompleted ? 'bg-[#1DB954] text-[#121212] border-[#1DB954] shadow-[#1DB954]/20' : 'border-[#1DB954]/30 hover:bg-[#1DB954] hover:text-[#121212] text-[#1DB954] hover:shadow-[#1DB954]/20'}`}
+                                            >
+                                                <span className="material-symbols-outlined text-[18px] font-bold">check</span>
+                                            </motion.button>
+                                            
+                                            <motion.button 
+                                                onClick={() => toggleTask(task._id, 'not_understood')}
+                                                whileHover={{ scale: 1.1 }}
+                                                whileTap={{ scale: 0.9 }}
+                                                title="Did not understand"
+                                                className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all shadow-lg cursor-pointer ${!isCompleted ? 'border-red-500/30 hover:bg-red-500 hover:text-white text-red-500 hover:shadow-red-500/20' : 'border-red-500/10 text-red-500/50 hover:bg-red-500 hover:text-white hover:border-red-500 shadow-none'}`}
+                                            >
+                                                <span className="material-symbols-outlined text-[18px] font-bold">close</span>
+                                            </motion.button>
+                                        </div>
                                     </div>
-                                </div>
-                            </motion.div>
-                        ))}
+                                </motion.div>
+                            );
+                        })}
+                        {tasks.length === 0 && (
+                            <p className="text-slate-400 mt-2">No tasks assigned for this subject yet.</p>
+                        )}
                     </div>
                 </section>
             </div>

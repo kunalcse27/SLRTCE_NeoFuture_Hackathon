@@ -1,9 +1,9 @@
 import express from 'express';
-import { 
-  getWellbeingStats, 
-  submitJournalEntry, 
-  chatWithMira, 
-  analyzeSentiment 
+import {
+    getWellbeingStats,
+    submitJournalEntry,
+    chatWithMira,
+    analyzeSentiment
 } from '../controllers/wellbeingController.js';
 
 const router = express.Router();

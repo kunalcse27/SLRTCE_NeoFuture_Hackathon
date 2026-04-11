@@ -25,6 +25,11 @@ const userSchema = new mongoose.Schema({
   profilePic: {
     type: String,
     default: '',
+  },
+  role: {
+    type: String,
+    enum: ["student", "teacher"],
+    default: "student",
   }
 }, {
   timestamps: true,

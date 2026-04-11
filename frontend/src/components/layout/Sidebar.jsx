@@ -44,16 +44,7 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <div className="mt-auto pt-6">
-        <motion.button 
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="w-full bg-gradient-to-br from-[#1DB954] to-teal-600 text-[#121212] py-4 px-4 rounded-3xl font-bold flex items-center justify-center gap-2 shadow-xl shadow-[#1DB954]/20 hover:brightness-110 transition-all"
-        >
-          <span className="material-symbols-outlined text-xl wellbeing-pulse" data-icon="heart_pulse">favorite</span>
-          Wellbeing Pulse
-        </motion.button>
-      </div>
+
     </aside>
   );
 }

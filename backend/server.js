@@ -6,6 +6,8 @@ import authRoutes from "./routes/authRoutes.js";
 
 // Routes
 import wellbeingRoutes from "./routes/wellbeing.routes.js";
+import subjectRoutes from "./routes/subjectRoutes.js";
+import taskRoutes from "./routes/taskRoutes.js";
 
 dotenv.config();
 
@@ -21,6 +23,8 @@ app.use("/api/auth", authRoutes);
 
 // API Routes
 app.use("/api/wellbeing", wellbeingRoutes);
+app.use("/api/subjects", subjectRoutes);
+app.use("/api/tasks", taskRoutes);
 
 app.get("/", (req, res) => {
   res.send("ALWS Backend API Running");

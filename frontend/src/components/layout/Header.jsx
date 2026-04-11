@@ -5,6 +5,9 @@ import { motion } from 'framer-motion';
 // ─── Read session from either localStorage (Remember Me) or sessionStorage ───
 function getSession() {
   try {
+    const userStr = localStorage.getItem('user');
+    if (userStr) return JSON.parse(userStr);
+
     const raw = localStorage.getItem('alws_session') || sessionStorage.getItem('alws_session');
     return raw ? JSON.parse(raw) : null;
   } catch {
@@ -17,9 +20,9 @@ export default function Header() {
   const session = getSession();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const displayName = session?.firstName
+  const displayName = session?.name || (session?.firstName
     ? `${session.firstName} ${session.lastName || ''}`.trim()
-    : session?.email?.split('@')[0] || 'Student';
+    : session?.email?.split('@')[0] || 'Student');
 
   const searchItems = [
     { name: 'Dashboard', path: '/dashboard' },
