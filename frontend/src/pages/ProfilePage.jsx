@@ -97,8 +97,6 @@ export default function ProfilePage() {
               </p>
             </div>
           </div>
-<<<<<<< HEAD
-=======
 
           <AnimatePresence mode="popLayout">
             {isEditing ? (
@@ -144,7 +142,6 @@ export default function ProfilePage() {
               </motion.div>
             )}
           </AnimatePresence>
->>>>>>> d3337d18c448329257438c974deea2cf4365164b
         </div>
 
         <div className="grid grid-cols-12 gap-8">
@@ -169,25 +166,14 @@ export default function ProfilePage() {
                   {profile.firstName} {profile.lastName}
                 </h3>
                 <div className="flex flex-col gap-1 items-center">
-<<<<<<< HEAD
-                  <span className="text-sm font-bold text-[#1DB954] uppercase tracking-[0.2em]">
-                    {profile.branch}
-                  </span>
-                  <span className="text-[10px] text-slate-500 font-black px-3 py-1 bg-white/5 rounded-full border border-white/5 uppercase">
-                    Roll No: {profile.rollNo}
-                  </span>
-=======
                   <span className="text-sm font-bold text-[#1DB954] uppercase tracking-[0.2em]">{profile.branch}</span>
                   <span className="text-[10px] text-slate-500 font-black px-3 py-1 bg-white/5 rounded-full border border-white/5 uppercase">Roll No: {profile.rollNo}</span>
->>>>>>> d3337d18c448329257438c974deea2cf4365164b
                 </div>
               </div>
             </motion.div>
           </div>
-<<<<<<< HEAD
-=======
 
-          {/* Form Sections */}
+          {/* Form Sections */
           <div className="col-span-12 lg:col-span-8 space-y-8">
             <motion.div layout className="glass-panel p-10 rounded-[3.5rem] border border-white/5 bg-[#1a1a1a]/60 space-y-12">
 
@@ -247,7 +233,6 @@ export default function ProfilePage() {
 
             </motion.div>
           </div>
->>>>>>> d3337d18c448329257438c974deea2cf4365164b
         </div>
       </div>
     </div>
@@ -273,14 +258,7 @@ function Field({
       <div className="relative">
         {icon && (
           <span
-<<<<<<< HEAD
-            className={`material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-sm transition-colors ${
-              isEditing ? "text-slate-400" : "text-[#1DB954]/40"
-            }`}
-=======
-            className={`material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-sm transition-colors ${isEditing ? 'text-slate-400' : 'text-[#1DB954]/40'
-              }`}
->>>>>>> d3337d18c448329257438c974deea2cf4365164b
+            className={`material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-sm transition-colors ${isEditing ? 'text-slate-400' : 'text-[#1DB954]/40'}`}
             data-icon={icon}
           >
             {icon}

@@ -28,38 +28,7 @@ export default function TeacherPage() {
     setNotification(message);
     setTimeout(() => setNotification(null), 3000);
   };
-=======
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
-const TEACHER_TASKS = [
-  { id: 1, text: "Grade Chemistry Lab Reports", completed: false, priority: "High" },
-  { id: 2, text: "Prepare Physics Lecture Slides", completed: true, priority: "Medium" },
-  { id: 3, text: "Update Attendance Records", completed: false, priority: "Low" },
-  { id: 4, text: "Review Mid-term Exam Papers", completed: false, priority: "High" },
-];
-
-export default function TeacherPage() {
-  const [tasks, setTasks] = useState(TEACHER_TASKS);
-  const [assignments, setAssignments] = useState([
-    { id: 1, title: "Organic Chemistry Basics", dueDate: "2026-04-15", subject: "Chemistry", format: "PDF", status: "Active" },
-    { id: 2, title: "Kinematics Problem Set", dueDate: "2026-04-12", subject: "Physics", format: "JPG", status: "Active" },
-    { id: 3, title: "Math Discussion Topic", dueDate: "2026-04-18", subject: "Mathematics", format: "Text", status: "Active" },
-  ]);
-  const [selectedSubject, setSelectedSubject] = useState('Chemistry');
-  const [newTask, setNewTask] = useState('');
-  const [showAssignmentModal, setShowAssignmentModal] = useState(false);
-  const [newAssignment, setNewAssignment] = useState({ title: '', dueDate: '', format: 'PDF', description: '' });
-  const [notification, setNotification] = useState(null);
-
-  const subjects = ['Chemistry', 'Physics', 'Mathematics', 'Biology'];
-  const formats = ['PDF', 'Text', 'JPG'];
-
-  const showToast = (message) => {
-    setNotification(message);
-    setTimeout(() => setNotification(null), 3000);
-  };
->>>>>>> d3337d18c448329257438c974deea2cf4365164b
 
   const createAssignment = (e) => {
     e.preventDefault();
@@ -109,17 +78,10 @@ export default function TeacherPage() {
               Workspace.
             </span>
           </h2>
-<<<<<<< HEAD
-          <p className="text-on-surface-variant max-w-md font-label text-base">
-            Manage your daily tasks and subjects.
-          </p>
+          <p className="text-on-surface-variant max-w-md font-label text-base">Create and manage academic tasks in multiple formats.</p>
         </motion.div>
-        <div className="flex gap-3"></div>
-      </div>
-
-      <div className="space-y-8"></div>
-
-      <div className="mt-10">
+        
+        <div className="flex flex-wrap gap-4">
         <section className="glass-panel p-8 rounded-[2.5rem] border border-outline-variant/15">
           <h3 className="text-xl font-bold font-headline text-on-surface flex items-center gap-3 mb-6">
             <span
@@ -130,190 +92,7 @@ export default function TeacherPage() {
             </span>
             Subjects & Tasks
           </h3>
-          {!addingSubject && (
-            <button
-              onClick={() => setAddingSubject(true)}
-              className="px-6 py-3 rounded-full bg-secondary text-on-secondary font-semibold hover:scale-105 transition-transform"
-            >
-              Add Subject
-            </button>
-          )}
-          {addingSubject && (
-            <div className="space-y-4">
-              <p className="text-on-surface-variant">
-                Select a subject to add:
-              </p>
-              <div className="flex gap-3 flex-wrap">
-                {subjectOptions.map((option) => (
-                  <button
-                    key={option}
-                    onClick={() => {
-                      if (!subjects.find((s) => s.name === option)) {
-                        setSubjects([...subjects, { name: option, tasks: [] }]);
-                      }
-                      setAddingSubject(false);
-                    }}
-                    className="px-4 py-2 rounded-xl bg-surface-container-highest border border-outline-variant/20 text-on-surface hover:bg-secondary hover:text-on-secondary transition-colors"
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
-              <button
-                onClick={() => setAddingSubject(false)}
-                className="mt-4 px-4 py-2 rounded-xl bg-outline-variant/10 text-on-surface-variant hover:bg-outline-variant/20 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          )}
-          <div className="space-y-6 mt-8">
-            {subjects.map((subject, index) => (
-              <div
-                key={index}
-                className="bg-surface-container-highest/20 p-6 rounded-2xl border border-outline-variant/10"
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-lg font-bold text-on-surface">
-                    Subject:- {subject.name}
-                  </h4>
-                  <button
-                    onClick={() => setCurrentSubjectIndex(index)}
-                    className="px-4 py-2 rounded-xl bg-tertiary text-on-tertiary font-semibold hover:scale-105 transition-transform"
-                  >
-                    Add Task
-                  </button>
-                </div>
-                {currentSubjectIndex === index && (
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      if (!newTaskTitle.trim()) return;
-                      const newTask = {
-                        id: Date.now(),
-                        title: newTaskTitle,
-                        description: newTaskDescription,
-                        attachment: newTaskAttachment,
-                        completed: false,
-                      };
-                      const updatedSubjects = [...subjects];
-                      updatedSubjects[index].tasks.push(newTask);
-                      setSubjects(updatedSubjects);
-                      setNewTaskTitle("");
-                      setNewTaskDescription("");
-                      setNewTaskAttachment(null);
-                      setCurrentSubjectIndex(null);
-                    }}
-                    className="space-y-4 mb-4"
-                  >
-                    <input
-                      type="text"
-                      placeholder="Task Title"
-                      value={newTaskTitle}
-                      onChange={(e) => setNewTaskTitle(e.target.value)}
-                      className="w-full px-5 py-4 bg-surface-container-high/40 border border-outline-variant/30 rounded-2xl focus:ring-4 focus:ring-secondary/10 focus:border-secondary outline-none transition-all duration-300 text-white font-medium placeholder:text-on-surface-variant/40 backdrop-blur-sm"
-                    />
-                    <textarea
-                      placeholder="Task Description"
-                      value={newTaskDescription}
-                      onChange={(e) => setNewTaskDescription(e.target.value)}
-                      className="w-full px-5 py-4 bg-surface-container-high/40 border border-outline-variant/30 rounded-2xl focus:ring-4 focus:ring-secondary/10 focus:border-secondary outline-none transition-all duration-300 text-white font-medium placeholder:text-on-surface-variant/40 backdrop-blur-sm resize-none"
-                      rows="3"
-                    />
-                    <input
-                      type="file"
-                      accept=".pdf"
-                      onChange={(e) => setNewTaskAttachment(e.target.files[0])}
-                      className="w-full px-5 py-4 bg-surface-container-high/40 border border-outline-variant/30 rounded-2xl focus:ring-4 focus:ring-secondary/10 focus:border-secondary outline-none transition-all duration-300 text-white font-medium placeholder:text-on-surface-variant/40 backdrop-blur-sm"
-                    />
-                    <button
-                      type="submit"
-                      className="w-full px-6 py-3 rounded-xl bg-secondary text-on-secondary font-semibold hover:scale-105 transition-transform"
-                    >
-                      Add Task
-                    </button>
-                  </form>
-                )}
-                <div className="space-y-3">
-                  {subject.tasks.map((task) => (
-                    <div
-                      key={task.id}
-                      className="flex items-center gap-4 p-3 rounded-xl bg-surface-container/20 border border-outline-variant/10 hover:border-secondary/30 transition-all cursor-pointer"
-                      onClick={() => {
-                        const updatedSubjects = [...subjects];
-                        updatedSubjects[index].tasks = updatedSubjects[
-                          index
-                        ].tasks.map((t) =>
-                          t.id === task.id
-                            ? { ...t, completed: !t.completed }
-                            : t,
-                        );
-                        setSubjects(updatedSubjects);
-                      }}
-                    >
-                      <div
-                        className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
-                          task.completed
-                            ? "bg-secondary border-secondary"
-                            : "border-outline-variant/40"
-                        }`}
-                      >
-                        {task.completed && (
-                          <span
-                            className="material-symbols-outlined text-xs text-on-secondary font-bold"
-                            data-icon="check"
-                          >
-                            check
-                          </span>
-                        )}
-                      </div>
-                      <div
-                        className={`flex-grow space-y-1 ${
-                          task.completed ? "line-through text-slate-500" : ""
-                        }`}
-                      >
-                        <p className="font-semibold text-xl text-white">
-                          Title:- {task.title}
-                        </p>
-                        <p className="text-xl text-white">
-                          Description:- {task.description}
-                        </p>
-                        {task.attachment && (
-                          <p className="text-xl text-white">
-                            Attachment:- {task.attachment.name}
-                          </p>
-                        )}
-                      </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const updatedSubjects = [...subjects];
-                          updatedSubjects[index].tasks = updatedSubjects[
-                            index
-                          ].tasks.filter((t) => t.id !== task.id);
-                          setSubjects(updatedSubjects);
-                        }}
-                        className="w-6 h-6 rounded-full bg-rose-500/10 hover:bg-rose-500/20 flex items-center justify-center transition-colors"
-                      >
-                        <span
-                          className="material-symbols-outlined text-xs text-rose-400"
-                          data-icon="cancel"
-                        >
-                          cancel
-                        </span>
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-=======
-          <p className="text-on-surface-variant max-w-md font-label text-base">Create and manage academic tasks in multiple formats.</p>
-        </motion.div>
-        
-        <div className="flex flex-wrap gap-4">
+          
           <motion.button 
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -455,7 +234,6 @@ export default function TeacherPage() {
             </div>
           </section>
         </div>
->>>>>>> d3337d18c448329257438c974deea2cf4365164b
       </div>
 
       {/* Simplified Multi-Format Modal */}
